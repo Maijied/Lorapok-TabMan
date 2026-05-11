@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "TabGroup": {
+      "title": "Tab Group",
+      "description": "A collection of tabs saved by the user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "isStarred": { "type": "boolean" },
+        "isLocked": { "type": "boolean" },
+        "tabs": {
+          "type": "array",
+          "items": { "type": "object" }
+        }
+      },
+      "required": ["id", "createdAt", "tabs"]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Basic user data and sync state",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "lastSync": { "type": "number" }
+      },
+      "required": ["uid"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/groups/{groupId}": {
+      "schema": "TabGroup",
+      "description": "Individual tab groups saved by the user"
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User specific metadata"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Probe for connection check
+    match /test/connection {
+      allow get: if true;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // TabGroup validation
+    function isValidTabGroup(data) {
+      return data.keys().hasAll(['id', 'createdAt', 'tabs']) &&
+             data.id is string &&
+             data.id.size() <= 128 &&
+             (data.createdAt is number || data.createdAt is timestamp) &&
+             data.tabs is list &&
+             data.tabs.size() <= 1000;
+    }
+
+    // UserProfile validation
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid']) &&
+             data.uid is string &&
+             data.uid.size() <= 128;
+    }
+
+    // User Profile
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserProfile(request.resource.data);
+      allow update: if isOwner(userId) && 
+                      isValidUserProfile(request.resource.data) &&
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['email', 'lastSync', 'displayName', 'updatedAt']);
+      
+      // User Groups
+      match /groups/{groupId} {
+        allow list, get: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(groupId) && isValidTabGroup(request.resource.data);
+        allow update: if isOwner(userId) && isValidTabGroup(request.resource.data) && (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'isStarred', 'isLocked', 'tabs', 'updatedAt'])
+        );
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}
