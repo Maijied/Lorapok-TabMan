@@ -74,9 +74,8 @@ jobs:
           web-ext sign \
             --api-key="${AMO_API_KEY}" \
             --api-secret="${AMO_API_SECRET}" \
-            --channel=listed \
+            --channel=unlisted \
             --source-dir=public/extension \
-            --amo-metadata=public/extension/amo-metadata.json \
             --artifacts-dir=./web-ext-artifacts
 
       - name: Commit version bump
