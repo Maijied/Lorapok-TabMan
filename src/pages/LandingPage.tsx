@@ -164,40 +164,86 @@ export default function LandingPage() {
       {/* App Preview / Dashboard Mockup */}
       <section className="px-6 py-20 relative overflow-hidden">
         <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="text-sky-500 font-bold tracking-widest text-xs uppercase">Dashboard Preview</span>
+            <h2 className="text-3xl font-black mt-2">Your tabs, organized.</h2>
+          </div>
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="relative rounded-3xl border border-white/10 bg-slate-900/50 backdrop-blur-xl overflow-hidden shadow-2xl"
+            className="relative rounded-3xl border border-white/10 bg-[#0a0f1a] overflow-hidden shadow-2xl"
           >
-            <div className="h-10 bg-white/5 border-b border-white/10 flex items-center px-4 gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/50" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
-              <div className="w-3 h-3 rounded-full bg-green-500/50" />
-              <div className="ml-4 h-6 w-1/2 bg-white/5 rounded-md" />
+            {/* Browser chrome */}
+            <div className="h-10 bg-white/[0.03] border-b border-white/10 flex items-center px-4 gap-2">
+              <div className="w-3 h-3 rounded-full bg-red-500/60" />
+              <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
+              <div className="w-3 h-3 rounded-full bg-green-500/60" />
+              <div className="ml-4 flex-1 h-6 bg-white/5 rounded-md flex items-center px-3">
+                <span className="text-[10px] text-slate-600 font-mono">maijied.github.io/Lorapok-TabMan/#/dashboard</span>
+              </div>
             </div>
-            <div className="p-8 aspect-video flex flex-col gap-6 overflow-hidden">
-              <div className="flex justify-between items-center bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/5">
-                <div className="flex flex-col gap-2">
-                  <div className="h-4 w-32 bg-sky-400/50 rounded-sm" />
-                  <div className="h-3 w-48 bg-slate-500/20 rounded-sm" />
+            <div className="flex h-[420px] overflow-hidden">
+              {/* Sidebar */}
+              <div className="w-52 border-r border-white/5 p-4 flex flex-col gap-3 shrink-0">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-7 h-7 rounded-full bg-sky-500/20 border border-sky-500/30" />
+                  <div className="flex flex-col gap-1">
+                    <div className="h-2.5 w-20 bg-white/20 rounded-sm" />
+                    <div className="h-1.5 w-14 bg-emerald-400/40 rounded-sm" />
+                  </div>
                 </div>
-                <div className="px-4 py-2 bg-sky-500/20 text-sky-400 rounded-lg text-sm font-bold uppercase tracking-wider">
-                  Restore All
+                {['My Groups', 'Analytics', 'Archive', 'Settings', 'Help'].map((item, i) => (
+                  <div key={item} className={`flex items-center gap-2 p-2 rounded-xl text-xs font-bold ${i === 0 ? 'bg-sky-500/10 text-sky-400 border border-sky-500/20' : 'text-slate-500'}`}>
+                    <div className={`w-3 h-3 rounded-sm ${i === 0 ? 'bg-sky-400/50' : 'bg-white/10'}`} />
+                    {item}
+                  </div>
+                ))}
+                <div className="mt-auto pt-4 border-t border-white/5 space-y-2">
+                  <div className="flex justify-between text-[10px] text-slate-600"><span>Total Groups</span><span className="text-sky-400 font-bold">12</span></div>
+                  <div className="flex justify-between text-[10px] text-slate-600"><span>Total Tabs</span><span className="text-sky-400 font-bold">87</span></div>
+                  <div className="flex justify-between text-[10px] text-slate-600"><span>Memory Saved</span><span className="text-emerald-400 font-bold">~4.3GB</span></div>
                 </div>
               </div>
-              <div className="space-y-4 opacity-50 select-none">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 rounded-xl border border-white/5">
-                    <div className="w-5 h-5 rounded-md bg-white/10" />
-                    <div className="h-3 w-full max-w-md bg-white/5 rounded-sm" />
-                    <div className="ml-auto w-4 h-4 rounded bg-white/5" />
+              {/* Main content */}
+              <div className="flex-1 p-5 overflow-hidden">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex-1 h-9 bg-white/[0.03] border border-white/5 rounded-xl" />
+                  <div className="h-9 w-24 bg-white/[0.03] border border-white/5 rounded-xl" />
+                </div>
+                {/* Tab groups */}
+                {[
+                  { name: 'Work Session', tabs: 8, tag: 'work', starred: true, color: 'amber' },
+                  { name: 'Research — AI Tools', tabs: 14, tag: 'research', starred: false, color: 'sky' },
+                  { name: 'Dev Resources', tabs: 6, tag: 'dev', starred: false, color: 'purple' },
+                ].map((group) => (
+                  <div key={group.name} className="mb-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${group.starred ? 'bg-amber-400' : 'bg-white/20'}`} />
+                        <span className="text-sm font-bold text-slate-200">{group.name}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold bg-${group.color}-500/10 text-${group.color}-400 border border-${group.color}-500/20`}>#{group.tag}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-slate-500">{group.tabs} tabs</span>
+                        <div className="px-3 py-1 bg-sky-500/20 text-sky-400 rounded-lg text-[10px] font-bold">Restore All</div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      {Array.from({ length: Math.min(group.tabs, 5) }).map((_, i) => (
+                        <div key={i} className="flex items-center gap-1.5 px-2 py-1 bg-white/[0.03] rounded-lg border border-white/5">
+                          <div className="w-3 h-3 rounded-sm bg-white/10" />
+                          <div className="h-1.5 w-16 bg-white/10 rounded-sm" />
+                        </div>
+                      ))}
+                      {group.tabs > 5 && <div className="flex items-center px-2 py-1 text-[10px] text-slate-500">+{group.tabs - 5} more</div>}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-sky-500/5 via-transparent to-white/5" />
+            <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-sky-500/3 via-transparent to-purple-500/3" />
           </motion.div>
         </div>
       </section>
@@ -252,6 +298,24 @@ export default function LandingPage() {
                   <div>
                     <h4 className="text-lg font-bold mb-2">Memory Isolation Layer</h4>
                     <p className="text-slate-400 text-sm md:text-base">By offloading tab metadata to a separate process, we isolate your browsing history from active system resources, reclaiming locked RAM immediately.</p>
+                  </div>
+                </div>
+                <div className="flex gap-6">
+                  <div className="w-12 h-12 shrink-0 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
+                    <span className="text-amber-400 font-bold">04</span>
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold mb-2">Tab Snooze Engine</h4>
+                    <p className="text-slate-400 text-sm md:text-base">The background script uses <code className="text-sky-400 text-xs bg-sky-500/10 px-1 rounded">browser.alarms</code> to periodically check tab inactivity and automatically discard idle tabs — freeing RAM without losing your session.</p>
+                  </div>
+                </div>
+                <div className="flex gap-6">
+                  <div className="w-12 h-12 shrink-0 rounded-2xl bg-pink-500/10 flex items-center justify-center border border-pink-500/20">
+                    <span className="text-pink-400 font-bold">05</span>
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold mb-2">ABAC Security Model</h4>
+                    <p className="text-slate-400 text-sm md:text-base">Firestore rules enforce Attribute-Based Access Control — every read and write is validated against the authenticated user's identity, ensuring complete data isolation.</p>
                   </div>
                 </div>
               </div>
@@ -313,12 +377,15 @@ export default function LandingPage() {
               </div>
 
               <div className="mt-12 flex flex-col md:flex-row items-center justify-center gap-6">
-                <a href="https://github.com/lorapok" className="w-full md:w-auto px-8 py-4 bg-white text-black rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-slate-200 transition-colors shadow-xl">
-                  <Logo size={24} className="grayscale brightness-0" /> View Repository
+                <a href="https://github.com/Maijied/Lorapok-TabMan" target="_blank" rel="noopener noreferrer" className="w-full md:w-auto px-8 py-4 bg-white text-black rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-slate-200 transition-colors shadow-xl">
+                  <Logo size={24} /> View Repository
                 </a>
-                <a href="#architecture" className="w-full md:w-auto px-8 py-4 bg-white/5 border border-white/10 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-white/10 transition-colors">
+                <button
+                  onClick={() => window.print()}
+                  className="w-full md:w-auto px-8 py-4 bg-white/5 border border-white/10 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-white/10 transition-colors"
+                >
                   Download Specs (PDF)
-                </a>
+                </button>
               </div>
             </div>
           </div>

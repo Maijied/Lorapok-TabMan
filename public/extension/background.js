@@ -1,11 +1,12 @@
 /**
  * Lorapok TabMan Background Script
+ * Manifest V2 — uses browser.browserAction (not browser.action)
  */
 
 // ⚠️  CONFIGURE BEFORE PUBLISHING ⚠️
 // Replace this URL with your actual deployed dashboard URL before submitting to AMO.
-// Example: "https://yourusername.github.io/lorapok-tabman/dashboard"
-const DASHBOARD_URL = "https://your-github-io-url/dashboard";
+// Example: "https://maijied.github.io/Lorapok-TabMan/#/dashboard"
+const DASHBOARD_URL = "https://maijied.github.io/Lorapok-TabMan/#/dashboard";
 
 // ---------------------------------------------------------------------------
 // Tab Snooze System
@@ -13,7 +14,6 @@ const DASHBOARD_URL = "https://your-github-io-url/dashboard";
 
 /**
  * Pure function — determines whether a tab should be snoozed.
- * Exported for unit testing.
  * @param {number} lastActive - Unix ms timestamp of last activity
  * @param {number} now        - Current Unix ms timestamp
  * @param {number} thresholdMs - Inactivity threshold in milliseconds
@@ -23,44 +23,32 @@ function shouldSnooze(lastActive, now, thresholdMs) {
   return (now - lastActive) >= thresholdMs;
 }
 
-/**
- * Records the current time as the last-active timestamp for a tab.
- * @param {number} tabId
- */
 async function updateLastActive(tabId) {
   const { lastActiveMap = {} } = await browser.storage.local.get('lastActiveMap');
   lastActiveMap[String(tabId)] = Date.now();
   await browser.storage.local.set({ lastActiveMap });
 }
 
-/**
- * Removes a tab from the last-active map (called when a tab is closed).
- * @param {number} tabId
- */
 async function removeFromLastActiveMap(tabId) {
   const { lastActiveMap = {} } = await browser.storage.local.get('lastActiveMap');
   delete lastActiveMap[String(tabId)];
   await browser.storage.local.set({ lastActiveMap });
 }
 
-// Reset inactivity timer when the user switches to a tab
 browser.tabs.onActivated.addListener(({ tabId }) => {
   updateLastActive(tabId);
 });
 
-// Reset inactivity timer when a tab finishes loading (navigation)
 browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (changeInfo.status === 'complete') {
     updateLastActive(tabId);
   }
 });
 
-// Clean up map entry when a tab is closed
 browser.tabs.onRemoved.addListener((tabId) => {
   removeFromLastActiveMap(tabId);
 });
 
-// Create a repeating alarm that fires every minute to check for inactive tabs
 browser.alarms.create('snoozeCheck', { periodInMinutes: 1 });
 
 browser.alarms.onAlarm.addListener(async (alarm) => {
@@ -71,8 +59,6 @@ browser.alarms.onAlarm.addListener(async (alarm) => {
 
   const thresholdMs = snoozeTimeoutMinutes * 60 * 1000;
   const now = Date.now();
-
-  // Only consider tabs that are not already discarded and not pinned
   const tabs = await browser.tabs.query({ discarded: false, pinned: false });
 
   for (const tab of tabs) {
@@ -85,11 +71,10 @@ browser.alarms.onAlarm.addListener(async (alarm) => {
 });
 
 // ---------------------------------------------------------------------------
-// Tab Collapse (existing functionality)
+// Tab Collapse — MV2 uses browser.browserAction (not browser.action)
 // ---------------------------------------------------------------------------
 
-browser.action.onClicked.addListener(async (tab) => {
-  // Query all tabs in the current window except pinned ones
+browser.browserAction.onClicked.addListener(async () => {
   const tabs = await browser.tabs.query({ currentWindow: true, pinned: false });
 
   if (tabs.length === 0) return;
@@ -110,15 +95,12 @@ browser.action.onClicked.addListener(async (tab) => {
     isLocked: false
   };
 
-  // Save to local storage
   const storage = await browser.storage.local.get("groups");
   const groups = storage.groups || [];
   await browser.storage.local.set({ groups: [newGroup, ...groups] });
 
-  // Close the tabs
   const tabIds = tabs.map(t => t.id).filter(id => id !== undefined);
   await browser.tabs.remove(tabIds);
 
-  // Open the TabMan dashboard
   browser.tabs.create({ url: DASHBOARD_URL });
 });

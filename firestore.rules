@@ -48,7 +48,10 @@ service cloud.firestore {
       allow update: if isOwner(userId) &&
                       isValidUserProfile(request.resource.data) &&
                       request.resource.data.diff(resource.data).affectedKeys()
-                        .hasOnly(['email', 'lastSync', 'displayName', 'name', 'updatedAt']);
+                        .hasOnly(['email', 'lastSync', 'displayName', 'name', 'updatedAt',
+                                  'autoArchiveEnabled', 'autoArchiveDays', 'excludedDomains',
+                                  'theme', 'accentColor', 'openOnStartup', 'restoreBehavior',
+                                  'toolbarClickBehavior', 'allowDuplicates']);
 
       // User Groups
       match /groups/{groupId} {
@@ -58,6 +61,14 @@ service cloud.firestore {
           request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['name', 'isStarred', 'isLocked', 'isArchived', 'tabs', 'tags', 'updatedAt'])
         );
+        allow delete: if isOwner(userId);
+      }
+
+      // Saved Views
+      match /views/{viewId} {
+        allow list, get: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(viewId);
+        allow update: if isOwner(userId);
         allow delete: if isOwner(userId);
       }
     }

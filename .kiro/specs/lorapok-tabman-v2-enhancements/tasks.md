@@ -162,7 +162,7 @@ Requirements 1, 2, 9, 10, 11, and 12 are already complete and are excluded from 
     - Extract the inline Node script logic into a testable `bumpPatchVersion(version: string): string` utility in `src/lib/utils.ts`
     - **Validates: Requirements 3.3, 8.5**
 
-- [ ] 7. Checkpoint — verify CI/CD workflow syntax and version bump logic
+- [x] 7. Checkpoint — verify CI/CD workflow syntax and version bump logic
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 8. Documentation update (Req 7)
@@ -225,3 +225,4 @@ Requirements 1, 2, 9, 10, 11, and 12 are already complete and are excluded from 
 - The ordering is intentional: task 1 (env vars) must complete before task 6 (CI/CD) can inject secrets correctly
 - `firebase-applet-config.json` remains in the repo until task 1.4 adds it to `.gitignore`; do not delete it before that step or the build will break on machines without a `.env` file
 - The `isSnoozed` field on `Tab` (task 4.1) is never written to Firestore — it is a transient, per-device state held only in `browser.storage.local`
+
