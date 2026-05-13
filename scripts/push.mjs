@@ -116,11 +116,14 @@ async function main() {
   // Check if there's anything to commit
   try {
     execSync('git diff --staged --quiet', { cwd: ROOT });
-    console.log('  ℹ  Nothing to commit — working tree clean.');
+    console.log('  ℹ  Nothing new to commit.');
   } catch {
-    // There are staged changes — commit them
     run(`git commit -m "${commitMsg.replace(/"/g, '\\"')}"`);
   }
+
+  // Pull remote changes (rebase) before pushing to avoid rejection
+  console.log('  ↓  Pulling remote changes (rebase)...');
+  run('git pull --rebase origin main');
 
   run('git push origin main');
 
