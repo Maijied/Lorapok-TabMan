@@ -45,16 +45,18 @@ service cloud.firestore {
     match /users/{userId} {
       allow get: if isOwner(userId);
       allow create: if isOwner(userId) && isValidUserProfile(request.resource.data);
-      allow update: if isOwner(userId) && 
+      allow update: if isOwner(userId) &&
                       isValidUserProfile(request.resource.data) &&
-                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['email', 'lastSync', 'displayName', 'name', 'updatedAt']);
-      
+                      request.resource.data.diff(resource.data).affectedKeys()
+                        .hasOnly(['email', 'lastSync', 'displayName', 'name', 'updatedAt']);
+
       // User Groups
       match /groups/{groupId} {
         allow list, get: if isOwner(userId);
         allow create: if isOwner(userId) && isValidId(groupId) && isValidTabGroup(request.resource.data);
         allow update: if isOwner(userId) && isValidTabGroup(request.resource.data) && (
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'isStarred', 'isLocked', 'isArchived', 'tabs', 'tags', 'updatedAt'])
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['name', 'isStarred', 'isLocked', 'isArchived', 'tabs', 'tags', 'updatedAt'])
         );
         allow delete: if isOwner(userId);
       }

@@ -1,24 +1,120 @@
-name: Deploy to GitHub Pages
+name: Build, Deploy & Publish
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
-  build-and-deploy:
+  # ─────────────────────────────────────────────
+  # JOB 1: Build the extension ZIP + bump version
+  # ─────────────────────────────────────────────
+  build-extension:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.bump.outputs.version }}
+      zip_name: ${{ steps.bump.outputs.zip_name }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Install and Build
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Bump patch version
+        id: bump
         run: |
-          npm install
-          npm run build
+          NEW_VERSION=$(node -e "
+            const fs = require('fs');
+            const manifest = JSON.parse(fs.readFileSync('public/extension/manifest.json', 'utf8'));
+            const parts = manifest.version.split('.').map(Number);
+            parts[2] += 1;
+            manifest.version = parts.join('.');
+            fs.writeFileSync('public/extension/manifest.json', JSON.stringify(manifest, null, 2) + '\n');
+            console.log(manifest.version);
+          ")
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "zip_name=lorapok-tabman-$NEW_VERSION.zip" >> $GITHUB_OUTPUT
+          echo "Bumped to $NEW_VERSION"
+
+      - name: Package extension ZIP
+        run: |
+          cd public/extension
+          zip -r "../../${{ steps.bump.outputs.zip_name }}" \
+            manifest.json \
+            background.js \
+            icons/
+
+      - name: Upload extension ZIP as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firefox-extension-${{ steps.bump.outputs.version }}
+          path: ${{ steps.bump.outputs.zip_name }}
+          retention-days: 90
+
+      - name: Sign with AMO (submit to Mozilla)
+        continue-on-error: true
+        env:
+          AMO_API_KEY: ${{ secrets.AMO_API_KEY }}
+          AMO_API_SECRET: ${{ secrets.AMO_API_SECRET }}
+        run: |
+          npm install -g web-ext
+          web-ext sign \
+            --source-dir public/extension \
+            --api-key "$AMO_API_KEY" \
+            --api-secret "$AMO_API_SECRET"
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/extension/manifest.json
+          git diff --staged --quiet || git commit -m "chore: bump extension to v${{ steps.bump.outputs.version }} [skip ci]"
+          git push
+
+  # ─────────────────────────────────────────────
+  # JOB 2: Build the React dashboard
+  # ─────────────────────────────────────────────
+  build-dashboard:
+    runs-on: ubuntu-latest
+    needs: build-extension
+    outputs:
+      artifact_url: ${{ steps.get_url.outputs.artifact_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main  # use latest (after version bump commit)
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Get extension artifact download URL
+        id: get_url
+        run: |
+          # Construct the artifact URL for the GitHub Actions run
+          ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "artifact_url=$ARTIFACT_URL" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build dashboard
+        run: npm run build
         env:
           VITE_FIREBASE_API_KEY:             ${{ secrets.FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN:         ${{ secrets.FIREBASE_AUTH_DOMAIN }}
@@ -28,8 +124,57 @@ jobs:
           VITE_FIREBASE_STORAGE_BUCKET:      ${{ secrets.FIREBASE_STORAGE_BUCKET }}
           VITE_FIREBASE_DATABASE_ID:         ${{ secrets.FIREBASE_DATABASE_ID }}
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          folder: dist
-          branch: gh-pages
+          path: dist
+
+  # ─────────────────────────────────────────────
+  # JOB 3: Deploy dashboard to GitHub Pages
+  # ─────────────────────────────────────────────
+  deploy-pages:
+    runs-on: ubuntu-latest
+    needs: build-dashboard
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # ─────────────────────────────────────────────
+  # JOB 4: Post setup notification as PR/issue comment
+  # ─────────────────────────────────────────────
+  notify:
+    runs-on: ubuntu-latest
+    needs: [build-extension, deploy-pages]
+    if: always()
+
+    steps:
+      - name: Post deployment summary
+        run: |
+          echo "## 🚀 Lorapok TabMan v${{ needs.build-extension.outputs.version }} Deployed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🌐 Dashboard" >> $GITHUB_STEP_SUMMARY
+          echo "Live at: https://${{ github.repository_owner }}.github.io/Lorapok-TabMan/" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🦊 Firefox Extension" >> $GITHUB_STEP_SUMMARY
+          echo "**Download:** [lorapok-tabman-${{ needs.build-extension.outputs.version }}.zip](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 How to install the extension locally (while awaiting Mozilla approval)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "1. Download the ZIP from the link above" >> $GITHUB_STEP_SUMMARY
+          echo "2. Extract the ZIP to a folder" >> $GITHUB_STEP_SUMMARY
+          echo "3. Open Firefox → go to \`about:debugging\`" >> $GITHUB_STEP_SUMMARY
+          echo "4. Click **This Firefox** → **Load Temporary Add-on...**" >> $GITHUB_STEP_SUMMARY
+          echo "5. Select the \`manifest.json\` file inside the extracted folder" >> $GITHUB_STEP_SUMMARY
+          echo "6. The TabMan icon will appear in your Firefox toolbar" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🎯 Usage" >> $GITHUB_STEP_SUMMARY
+          echo "- **Collapse tabs**: Click the TabMan toolbar icon to save all open tabs and close them" >> $GITHUB_STEP_SUMMARY
+          echo "- **View groups**: Open the dashboard at the link above" >> $GITHUB_STEP_SUMMARY
+          echo "- **Restore tabs**: Click 'Restore All' on any group card" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tab Snooze**: Inactive tabs auto-unload after your configured timeout (Settings → Tab Snooze)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Cloud sync**: Sign in with Google to sync groups across devices" >> $GITHUB_STEP_SUMMARY
