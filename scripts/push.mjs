@@ -123,7 +123,14 @@ async function main() {
 
   // Pull remote changes (rebase) before pushing to avoid rejection
   console.log('  ↓  Pulling remote changes (rebase)...');
-  run('git pull --rebase origin main');
+  try {
+    execSync('git pull --rebase origin main', { cwd: ROOT, stdio: ['inherit', 'inherit', 'pipe'] });
+  } catch (e) {
+    // git pull prints fetch info to stderr even on success — only fail on real errors
+    if (e.status !== 0 && !String(e.stderr).includes('Current branch')) {
+      throw e;
+    }
+  }
 
   run('git push origin main');
 
