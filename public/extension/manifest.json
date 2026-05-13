@@ -1,18 +1,25 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "Lorapok TabMan",
-  "version": "1.0.5",
-  "description": "Reduce memory usage and reclaim your focus by collapsing all open tabs into a single list.",
+  "version": "1.0.4",
+  "description": "Reduce memory usage and reclaim your focus by collapsing all open tabs into a single, searchable dashboard.",
   "author": "Mohammad Maizied Hasan Majumder",
-  "license": "Apache-2.0",
-  "permissions": [
-    "tabs",
-    "storage",
-    "activeTab",
-    "notifications",
-    "alarms"
-  ],
-  "action": {
+  "developer": {
+    "name": "Mohammad Maizied Hasan Majumder",
+    "url": "https://lorapok.github.io"
+  },
+  "homepage_url": "https://maijied.github.io/Lorapok-TabMan/",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "tabman@lorapok.com",
+      "strict_min_version": "109.0",
+      "data_collection_permissions": {
+        "required": ["none"],
+        "optional": []
+      }
+    }
+  },
+  "browser_action": {
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png",
@@ -21,12 +28,10 @@
       "96": "icons/icon-96.png",
       "128": "icons/icon-128.png"
     },
-    "default_title": "Collapse Tabs to Lorapok TabMan"
+    "default_title": "Collapse Tabs — Lorapok TabMan"
   },
   "background": {
-    "scripts": [
-      "background.js"
-    ]
+    "scripts": ["background.js"]
   },
   "icons": {
     "16": "icons/icon-16.png",
@@ -36,10 +41,11 @@
     "96": "icons/icon-96.png",
     "128": "icons/icon-128.png"
   },
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "tabman@lorapok.com",
-      "strict_min_version": "109.0"
-    }
-  }
+  "permissions": [
+    "tabs",
+    "storage",
+    "activeTab",
+    "notifications",
+    "alarms"
+  ]
 }
