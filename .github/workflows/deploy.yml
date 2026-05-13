@@ -68,6 +68,7 @@ jobs:
           retention-days: 90
 
       - name: Sign with AMO (submit to Mozilla)
+        id: amo_sign
         continue-on-error: true
         env:
           AMO_API_KEY: ${{ secrets.AMO_API_KEY }}
@@ -77,10 +78,71 @@ jobs:
           web-ext sign \
             --api-key="${AMO_API_KEY}" \
             --api-secret="${AMO_API_SECRET}" \
-            --channel=listed \
+            --channel=unlisted \
             --source-dir=public/extension \
-            --amo-metadata=public/extension/amo-metadata.json \
             --artifacts-dir=./web-ext-artifacts
+
+      - name: Update AMO listing metadata via API
+        continue-on-error: true
+        env:
+          AMO_API_KEY: ${{ secrets.AMO_API_KEY }}
+          AMO_API_SECRET: ${{ secrets.AMO_API_SECRET }}
+        run: |
+          # Generate JWT token for AMO API
+          node -e "
+            const crypto = require('crypto');
+            const issuedAt = Math.floor(Date.now() / 1000);
+            const payload = {
+              iss: process.env.AMO_API_KEY,
+              jti: Math.random().toString(36),
+              iat: issuedAt,
+              exp: issuedAt + 300
+            };
+            const header = Buffer.from(JSON.stringify({alg:'HS256',typ:'JWT'})).toString('base64url');
+            const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+            const sig = crypto.createHmac('sha256', process.env.AMO_API_SECRET).update(header+'.'+body).digest('base64url');
+            console.log(header+'.'+body+'.'+sig);
+          " > /tmp/jwt.txt
+          JWT=\$(cat /tmp/jwt.txt)
+
+          # Update addon metadata (description, tags, homepage, support email)
+          curl -s -X PATCH \
+            "https://addons.mozilla.org/api/v5/addons/addon/tabman@lorapok.com/" \
+            -H "Authorization: JWT \${JWT}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "description": {"en-US": "**Lorapok TabMan** is a next-generation Firefox tab manager built for power users.\n\n**Key Features:**\n\n- ⚡ **One-Click Collapse** — Save all open tabs and close them instantly, reclaiming up to 95% of tab memory\n- 😴 **Tab Snooze** — Automatically unloads inactive tabs from memory after a configurable timeout (1 min – 7 days)\n- ☁️ **Cloud Sync** — Sign in with Google to sync your tab groups across all devices via Firebase\n- 📁 **Smart Groups** — Organize tabs into named groups with stars, locks, and hierarchical tags\n- ⌨️ **Keyboard Shortcuts** — Navigate and manage at lightning speed\n- 📊 **Memory Analytics** — Visualize how much RAM you have reclaimed\n- 📦 **Bulk Operations** — Multi-select tagging, archiving, and deletion\n- 🔄 **OneTab Migration** — Import your existing OneTab sessions instantly\n\nOpen source under Apache-2.0. Built with passion in Bangladesh by Lorapok Labs."},
+              "homepage": {"en-US": "https://maijied.github.io/Lorapok-TabMan/"},
+              "support_email": {"en-US": "lorapokdev@gmail.com"},
+              "tags": ["privacy", "search"],
+              "categories": {"firefox": ["tabs", "other"]}
+            }' | head -c 500
+
+      - name: Upload addon icon to AMO
+        continue-on-error: true
+        env:
+          AMO_API_KEY: ${{ secrets.AMO_API_KEY }}
+          AMO_API_SECRET: ${{ secrets.AMO_API_SECRET }}
+        run: |
+          node -e "
+            const crypto = require('crypto');
+            const issuedAt = Math.floor(Date.now() / 1000);
+            const payload = {
+              iss: process.env.AMO_API_KEY,
+              jti: Math.random().toString(36),
+              iat: issuedAt,
+              exp: issuedAt + 300
+            };
+            const header = Buffer.from(JSON.stringify({alg:'HS256',typ:'JWT'})).toString('base64url');
+            const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+            const sig = crypto.createHmac('sha256', process.env.AMO_API_SECRET).update(header+'.'+body).digest('base64url');
+            console.log(header+'.'+body+'.'+sig);
+          " > /tmp/jwt2.txt
+          JWT2=\$(cat /tmp/jwt2.txt)
+          curl -s -X PATCH \
+            "https://addons.mozilla.org/api/v5/addons/addon/tabman@lorapok.com/" \
+            -H "Authorization: JWT \${JWT2}" \
+            -F "icon=@public/extension/icons/icon-128.png" | head -c 200
 
       - name: Commit version bump
         run: |
