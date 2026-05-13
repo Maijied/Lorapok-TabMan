@@ -16,6 +16,8 @@
       "en-US": "Lorapok TabMan is a next-generation Firefox tab manager. One click collapses all open tabs into a structured, searchable dashboard. Features include cloud sync via Firebase, hierarchical tagging, bulk operations, Tab Snooze (auto-unload inactive tabs), analytics, and keyboard shortcuts."
     },
     "homepage": "https://maijied.github.io/Lorapok-TabMan/",
-    "categories": ["tabs", "productivity"]
+    "categories": {
+      "firefox": ["tabs", "productivity"]
+    }
   }
 }
