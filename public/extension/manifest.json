@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Lorapok TabMan",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Reduce memory usage and reclaim your focus by collapsing all open tabs into a single list.",
   "author": "Mohammad Maizied Hasan Majumder",
   "permissions": [
@@ -23,7 +23,9 @@
     "default_title": "Collapse Tabs to Lorapok TabMan"
   },
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "background.js"
+    ]
   },
   "icons": {
     "16": "icons/icon-16.png",
