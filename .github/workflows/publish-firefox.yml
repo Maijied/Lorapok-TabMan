@@ -1,0 +1,80 @@
+name: Publish Firefox Add-on to AMO
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'public/extension/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Bump patch version in manifest.json
+        id: bump
+        run: |
+          NEW_VERSION=$(node -e "
+            const fs = require('fs');
+            const manifest = JSON.parse(fs.readFileSync('public/extension/manifest.json', 'utf8'));
+            const parts = manifest.version.split('.').map(Number);
+            parts[2] += 1;
+            manifest.version = parts.join('.');
+            fs.writeFileSync('public/extension/manifest.json', JSON.stringify(manifest, null, 2) + '\n');
+            console.log(manifest.version);
+          ")
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Bumped to version $NEW_VERSION"
+
+      - name: Package extension into ZIP
+        run: |
+          cd public/extension
+          zip -r "../../lorapok-tabman-${{ steps.bump.outputs.version }}.zip" \
+            manifest.json \
+            background.js \
+            icons/
+          echo "Created lorapok-tabman-${{ steps.bump.outputs.version }}.zip"
+
+      - name: Install web-ext
+        run: npm install -g web-ext
+
+      - name: Sign extension with AMO
+        continue-on-error: true
+        env:
+          AMO_API_KEY: ${{ secrets.AMO_API_KEY }}
+          AMO_API_SECRET: ${{ secrets.AMO_API_SECRET }}
+        run: |
+          web-ext sign \
+            --source-dir public/extension \
+            --api-key "$AMO_API_KEY" \
+            --api-secret "$AMO_API_SECRET"
+
+      - name: Upload extension ZIP as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firefox-extension
+          path: lorapok-tabman-${{ steps.bump.outputs.version }}.zip
+          retention-days: 30
+
+      - name: Commit version bump back to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/extension/manifest.json
+          git diff --staged --quiet || git commit -m "chore: bump extension version to ${{ steps.bump.outputs.version }} [skip ci]"
+          git push

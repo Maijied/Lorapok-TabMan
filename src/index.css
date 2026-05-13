@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-accent: var(--accent-color, #38bdf8);
+  --color-accent-soft: var(--accent-soft-color, rgba(56, 189, 248, 0.1));
+  --color-accent-border: var(--accent-border-color, rgba(56, 189, 248, 0.2));
+  --color-background-main: var(--background-main, #030711);
+  --color-background-card: var(--background-card, #0a0f1a);
+}
+
+@layer base {
+  :root {
+    --accent-color: #38bdf8;
+    --accent-soft-color: rgba(56, 189, 248, 0.1);
+    --accent-border-color: rgba(56, 189, 248, 0.2);
+    --background-main: #030711;
+    --background-card: #0a0f1a;
+  }
+}
