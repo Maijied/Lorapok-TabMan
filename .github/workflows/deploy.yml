@@ -72,6 +72,7 @@ jobs:
           npm install -g web-ext
           web-ext sign \
             --source-dir public/extension \
+            --channel listed \
             --api-key "$AMO_API_KEY" \
             --api-secret "$AMO_API_SECRET"
 
