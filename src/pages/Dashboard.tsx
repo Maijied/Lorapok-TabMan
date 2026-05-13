@@ -8,7 +8,8 @@ import {
   BarChart3, PieChart as PieChartIcon, TrendingUp, Zap, Archive, History,
   Cloud, CloudOff, AlertCircle, CheckCircle2,
   Bookmark, BookmarkPlus, Save, BookmarkCheck, Keyboard,
-  Share2, Copy, Trash, Linkedin, Twitter, Mail, MessageSquare, UserCheck
+  Share2, Copy, Trash, Linkedin, Twitter, Mail, MessageSquare, UserCheck,
+  Github, Instagram, Facebook, ExternalLink as ExternalLinkIcon2, Send, Phone
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -512,20 +513,52 @@ export default function Dashboard() {
   };
 
   const handleSimulateCollapse = async () => {
-    const dummyTabs: Tab[] = [
+    const tabPool: Tab[] = [
       { id: crypto.randomUUID(), title: 'Google AI Studio', url: 'https://aistudio.google.com', timestamp: Date.now() },
       { id: crypto.randomUUID(), title: 'React Documentation', url: 'https://react.dev', timestamp: Date.now() },
       { id: crypto.randomUUID(), title: 'Tailwind CSS Tips', url: 'https://tailwindcss.com', timestamp: Date.now() },
-      { id: crypto.randomUUID(), title: 'GitHub - Lorapok/Tabman', url: 'https://github.com/lorapok/tabman', timestamp: Date.now() },
+      { id: crypto.randomUUID(), title: 'GitHub - Lorapok/TabMan', url: 'https://github.com/lorapok/tabman', timestamp: Date.now() },
+      { id: crypto.randomUUID(), title: 'MDN Web Docs', url: 'https://developer.mozilla.org', timestamp: Date.now() },
+      { id: crypto.randomUUID(), title: 'TypeScript Handbook', url: 'https://www.typescriptlang.org/docs', timestamp: Date.now() },
+      { id: crypto.randomUUID(), title: 'Vite Documentation', url: 'https://vitejs.dev', timestamp: Date.now() },
+      { id: crypto.randomUUID(), title: 'Firebase Console', url: 'https://console.firebase.google.com', timestamp: Date.now() },
+      { id: crypto.randomUUID(), title: 'Stack Overflow', url: 'https://stackoverflow.com', timestamp: Date.now() },
+      { id: crypto.randomUUID(), title: 'Framer Motion Docs', url: 'https://www.framer.com/motion', timestamp: Date.now() },
+      { id: crypto.randomUUID(), title: 'Lucide Icons', url: 'https://lucide.dev', timestamp: Date.now() },
+      { id: crypto.randomUUID(), title: 'Can I Use', url: 'https://caniuse.com', timestamp: Date.now() },
     ];
+
+    const tagSets = [
+      ['productivity', 'work'],
+      ['research', 'dev'],
+      ['design', 'ui'],
+      ['docs', 'reference'],
+      ['tools', 'dev'],
+    ];
+
+    const groupNames = [
+      'Dev Session',
+      'Research Tabs',
+      'Design Sprint',
+      'Quick Reference',
+      'Work Tabs',
+    ];
+
+    // Pick a random subset of 3–6 tabs
+    const shuffled = tabPool.sort(() => Math.random() - 0.5);
+    const count = 3 + Math.floor(Math.random() * 4); // 3 to 6
+    const dummyTabs = shuffled.slice(0, count).map(t => ({ ...t, id: crypto.randomUUID() }));
+
+    const randomIndex = Math.floor(Math.random() * groupNames.length);
 
     const newGroup: TabGroup = {
       id: crypto.randomUUID(),
+      name: `${groupNames[randomIndex]} (${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`,
       createdAt: Date.now(),
       tabs: dummyTabs,
       isStarred: false,
       isLocked: false,
-      tags: ['productivity', 'work']
+      tags: tagSets[randomIndex],
     };
 
     if (user) {
@@ -1392,20 +1425,6 @@ export default function Dashboard() {
               </div>
             )}
 
-            <div className="mt-8 pt-8 border-t border-white/5 space-y-4">
-              <div className="flex justify-between items-center text-xs text-slate-500">
-                <span>Total Groups</span>
-                <span className="text-sky-400 font-bold">{groups.length}</span>
-              </div>
-              <div className="flex justify-between items-center text-xs text-slate-500">
-                <span>Total Tabs</span>
-                <span className="text-sky-400 font-bold">{groups.reduce((acc, g) => acc + g.tabs.length, 0)}</span>
-              </div>
-              <div className="flex justify-between items-center text-xs text-slate-500">
-                <span>Memory Saved</span>
-                <span className="text-emerald-400 font-bold">~{groups.reduce((acc, g) => acc + g.tabs.length, 0) * 50}MB</span>
-              </div>
-            </div>
           </div>
 
           <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5">
@@ -1553,35 +1572,19 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.2em] mr-1 hidden sm:block">Connect:</span>
-              <a 
-                href="https://www.linkedin.com/showcase/lorapok/" 
-                target="_blank" 
-                rel="noreferrer"
-                className="p-2 rounded-lg bg-white/5 text-slate-500 hover:text-sky-400 hover:bg-white/10 transition-all"
-                title="LinkedIn"
-              >
-                <Linkedin className="w-3.5 h-3.5" />
-              </a>
-              <a 
-                href="https://www.reddit.com/r/LorapokLabs/" 
-                target="_blank" 
-                rel="noreferrer"
-                className="p-2 rounded-lg bg-white/5 text-slate-500 hover:text-sky-400 hover:bg-white/10 transition-all"
-                title="Reddit"
-              >
-                <MessageSquare className="w-3.5 h-3.5" />
-              </a>
-              <a 
-                href="https://gravatar.com/lorapok" 
-                target="_blank" 
-                rel="noreferrer"
-                className="p-2 rounded-lg bg-white/5 text-slate-500 hover:text-sky-400 hover:bg-white/10 transition-all"
-                title="Gravatar"
-              >
-                <UserCheck className="w-3.5 h-3.5" />
-              </a>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/5">
+                <span className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">Groups</span>
+                <span className="text-[11px] text-sky-400 font-black ml-1.5">{groups.length}</span>
+              </div>
+              <div className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/5">
+                <span className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">Tabs</span>
+                <span className="text-[11px] text-sky-400 font-black ml-1.5">{groups.reduce((acc, g) => acc + g.tabs.length, 0)}</span>
+              </div>
+              <div className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/5">
+                <span className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">Saved</span>
+                <span className="text-[11px] text-emerald-400 font-black ml-1.5">~{groups.reduce((acc, g) => acc + g.tabs.length, 0) * 50}MB</span>
+              </div>
             </div>
           </div>
 
@@ -1765,18 +1768,28 @@ export default function Dashboard() {
             <HelpView setShowDeveloperModal={setShowDeveloperModal} />
           )}
 
-          {/* Persistent Connect Options — no footer, just a slim social bar */}
-          <div className="mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Logo size={20} />
-              <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Lorapok Labs &middot; Bangladesh</span>
+          {/* Footer — branding + social links */}
+          <div className="mt-16 pt-8 border-t border-white/10">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
+              <div className="flex items-center gap-3 shrink-0">
+                <Logo size={24} />
+                <div>
+                  <span className="text-sm font-bold text-slate-300 block">Lorapok Labs &middot; Bangladesh</span>
+                  <span className="text-xs text-slate-500">&copy; {new Date().getFullYear()} Lorapok Labs. All rights reserved.</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap justify-end">
+                <FooterConnectLink href="https://github.com/lorapok" icon={<Github className="w-5 h-5" />} label="GitHub" />
+                <FooterConnectLink href="https://x.com/lorapoklabs" icon={<Twitter className="w-5 h-5" />} label="X / Twitter" />
+                <FooterConnectLink href="mailto:lorapokdev@gmail.com" icon={<Mail className="w-5 h-5" />} label="Email" />
+                <FooterConnectLink href="https://www.linkedin.com/showcase/lorapok/" icon={<Linkedin className="w-5 h-5" />} label="LinkedIn" />
+                <FooterConnectLink href="https://www.reddit.com/r/LorapokLabs/" icon={<MessageSquare className="w-5 h-5" />} label="Reddit" />
+                <FooterConnectLink href="https://gravatar.com/lorapok" icon={<UserCheck className="w-5 h-5" />} label="Gravatar" />
+                <FooterConnectLink href="https://www.instagram.com/lorapoklabs/" icon={<Instagram className="w-5 h-5" />} label="Instagram" />
+                <FooterConnectLink href="https://www.facebook.com/lorapoklabs" icon={<Facebook className="w-5 h-5" />} label="Facebook" />
+                <FooterConnectLink href="https://lorapok.com/contact" icon={<ExternalLinkIcon2 className="w-5 h-5" />} label="Contact" />
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <FooterConnectLink href="https://www.linkedin.com/showcase/lorapok/" icon={<Linkedin className="w-4 h-4" />} label="LinkedIn" />
-              <FooterConnectLink href="https://www.reddit.com/r/LorapokLabs/" icon={<MessageSquare className="w-4 h-4" />} label="Reddit" />
-              <FooterConnectLink href="https://gravatar.com/lorapok" icon={<UserCheck className="w-4 h-4" />} label="Gravatar" />
-            </div>
-            <span className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">&copy; {new Date().getFullYear()} Lorapok Labs</span>
           </div>
         </main>
       </div>
@@ -1949,42 +1962,6 @@ export default function Dashboard() {
                     placeholder="Enter your name"
                     className="w-full bg-white/[0.03] border border-white/5 rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/50 transition-all text-white placeholder:text-slate-600"
                   />
-                </div>
-
-                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="text-white text-sm font-bold">Auto-Archive</h4>
-                      <p className="text-slate-500 text-[10px]">Automatically archive inactive groups</p>
-                    </div>
-                    <button 
-                      type="button"
-                      onClick={() => setAutoArchiveEnabled(!autoArchiveEnabled)}
-                      className={cn(
-                        "w-12 h-6 rounded-full transition-all relative",
-                        autoArchiveEnabled ? "bg-sky-500" : "bg-white/10"
-                      )}
-                    >
-                      <div className={cn(
-                        "absolute top-1 w-4 h-4 rounded-full bg-white transition-all",
-                        autoArchiveEnabled ? "right-1" : "left-1"
-                      )} />
-                    </button>
-                  </div>
-                  
-                  {autoArchiveEnabled && (
-                    <div className="pt-2 border-t border-white/5">
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Threshold (Days)</label>
-                      <input 
-                        type="number"
-                        min="1"
-                        max="365"
-                        value={autoArchiveDays}
-                        onChange={(e) => setAutoArchiveDays(parseInt(e.target.value) || 30)}
-                        className="w-full bg-white/[0.03] border border-white/5 rounded-xl py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-white"
-                      />
-                    </div>
-                  )}
                 </div>
 
                 {authError && (
@@ -2258,56 +2235,51 @@ export default function Dashboard() {
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="relative w-full max-w-lg bg-[#0a0f1a] border border-white/10 rounded-[3rem] p-8 sm:p-12 shadow-2xl overflow-hidden"
             >
-              <div className="absolute -top-32 -right-32 w-64 h-64 bg-accent-soft blur-[100px] rounded-full" />
+              <div className="absolute -top-32 -right-32 w-64 h-64 bg-accent-soft blur-[100px] rounded-full pointer-events-none" />
               
-              <div className="relative text-center mb-10">
-                <div className="flex justify-center mb-8">
+              <div className="relative text-center mb-8">
+                <div className="flex justify-center mb-6">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-accent/20 blur-2xl rounded-full" />
-                    <img 
-                      src="https://gravatar.com/avatar/lorapok?s=400" 
-                      alt="Developer Avatar" 
-                      className="w-32 h-32 rounded-[2.5rem] border-2 border-white/20 shadow-2xl relative z-10 grayscale hover:grayscale-0 transition-all duration-500"
+                    {/* Animated glow rings */}
+                    <motion.div
+                      animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.6, 0.3] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                      className="absolute inset-0 rounded-[2.5rem] bg-sky-500/20 blur-xl"
+                    />
+                    <motion.div
+                      animate={{ scale: [1.1, 1, 1.1], opacity: [0.2, 0.4, 0.2] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+                      className="absolute -inset-2 rounded-[3rem] bg-purple-500/10 blur-2xl"
+                    />
+                    <motion.img
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.5, type: 'spring', stiffness: 200 }}
+                      whileHover={{ scale: 1.05, rotate: 2 }}
+                      src="https://maijied.github.io/Maijied/avatar.jpg"
+                      alt="Maizied Hasan"
+                      className="w-32 h-32 rounded-[2.5rem] border-2 border-white/20 shadow-2xl relative z-10 object-cover"
                     />
                   </div>
                 </div>
-                <h2 className="text-3xl font-black text-white mb-2 tracking-tight">Mohammad Maizied Hasan Majumder</h2>
+                <h2 className="text-2xl font-black text-white mb-1 tracking-tight">Mohammad Maizied Hasan Majumder</h2>
                 <p className="text-sky-400 font-bold text-sm uppercase tracking-[0.2em]">Founder of Lorapok Labs</p>
               </div>
 
-              <div className="space-y-4 mb-10">
-                <div className="grid grid-cols-2 gap-4">
-                  <DeveloperLink 
-                    icon={<Globe className="w-4 h-4" />} 
-                    label="Website" 
-                    href="https://lorapok.github.io/#contact" 
-                  />
-                  <DeveloperLink 
-                    icon={<Mail className="w-4 h-4" />} 
-                    label="Email" 
-                    href="mailto:lorapokdev@gmail.com" 
-                  />
-                  <DeveloperLink 
-                    icon={<Linkedin className="w-4 h-4" />} 
-                    label="LinkedIn" 
-                    href="https://www.linkedin.com/showcase/lorapok/" 
-                  />
-                  <DeveloperLink 
-                    icon={<Twitter className="w-4 h-4" />} 
-                    label="X / Twitter" 
-                    href="https://x.com/LorapokLabs" 
-                  />
-                  <DeveloperLink 
-                    icon={<MessageSquare className="w-4 h-4" />} 
-                    label="Reddit" 
-                    href="https://www.reddit.com/r/LorapokLabs/" 
-                  />
-                  <DeveloperLink 
-                    icon={<UserCheck className="w-4 h-4" />} 
-                    label="Gravatar" 
-                    href="https://gravatar.com/lorapok" 
-                  />
-                </div>
+              <div className="grid grid-cols-2 gap-2.5 mb-8">
+                {[
+                  { icon: <Globe className="w-4 h-4" />,        label: 'Website',   href: 'https://maijied.github.io/Maijied/' },
+                  { icon: <Mail className="w-4 h-4" />,         label: 'Email',     href: 'mailto:mdshuvo40@gmail.com' },
+                  { icon: <Github className="w-4 h-4" />,       label: 'GitHub',    href: 'https://github.com/Maijied' },
+                  { icon: <Linkedin className="w-4 h-4" />,     label: 'LinkedIn',  href: 'https://www.linkedin.com/in/maizied/' },
+                  { icon: <Twitter className="w-4 h-4" />,      label: 'X / Twitter', href: 'https://x.com/MAIJIED61' },
+                  { icon: <Send className="w-4 h-4" />,         label: 'Telegram',  href: 'https://t.me/maizied' },
+                  { icon: <Phone className="w-4 h-4" />,        label: 'WhatsApp',  href: 'https://wa.me/message/J7YTFGC7RTOGC1' },
+                  { icon: <MessageSquare className="w-4 h-4" />,label: 'Reddit',    href: 'https://www.reddit.com/user/maijied/' },
+                  { icon: <UserCheck className="w-4 h-4" />,    label: 'Gravatar',  href: 'https://gravatar.com/lorapok' },
+                ].map(({ icon, label, href }) => (
+                  <DeveloperLink key={label} icon={icon} label={label} href={href} />
+                ))}
               </div>
 
               <button 
@@ -2334,6 +2306,15 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+function CommitButton({ isUpdatingProfile }: { isUpdatingProfile: boolean }) {
+  return (
+    <button type="submit" disabled={isUpdatingProfile}
+      className="w-full py-4 rounded-3xl bg-accent hover:opacity-90 text-white font-black text-sm transition-all shadow-2xl disabled:opacity-50 flex items-center justify-center gap-3 uppercase tracking-[0.2em]">
+      {isUpdatingProfile ? <RefreshCw className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Commit Preferences</>}
+    </button>
   );
 }
 
@@ -2366,8 +2347,12 @@ function SettingsView({
   importFileRef,
   handleUpdateProfile,
   isUpdatingProfile,
-  authError
+  authError,
+  snoozeTimeoutMinutes,
+  setSnoozeTimeoutMinutes
 }: any) {
+  const [settingsTab, setSettingsTab] = useState<'appearance' | 'behavior' | 'automation' | 'data'>('appearance');
+
   if (!user) {
     return (
       <div className="py-20 text-center bg-white/[0.02] rounded-[3rem] border border-white/5">
@@ -2378,475 +2363,288 @@ function SettingsView({
     );
   }
 
+  const SETTINGS_TABS = [
+    { id: 'appearance' as const, label: 'Appearance', icon: <PieChartIcon className="w-3.5 h-3.5" /> },
+    { id: 'behavior' as const,   label: 'Behavior',   icon: <Zap className="w-3.5 h-3.5" /> },
+    { id: 'automation' as const, label: 'Automation', icon: <Clock className="w-3.5 h-3.5" /> },
+    { id: 'data' as const,       label: 'Data',       icon: <Download className="w-3.5 h-3.5" /> },
+  ];
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-2xl mx-auto space-y-10 pb-20"
+      className="w-full pb-20"
     >
-      <div className="flex items-center gap-6 p-8 rounded-[2.5rem] bg-white/[0.03] border border-white/5 backdrop-blur-xl relative overflow-hidden group">
-        <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-opacity">
-          <Settings className="w-24 h-24 text-sky-400" />
+      {/* Profile header */}
+      <div className="flex items-center gap-5 p-6 rounded-[2rem] bg-white/[0.03] border border-white/5 mb-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+          <Settings className="w-20 h-20 text-sky-400" />
         </div>
-              <div className="w-20 h-20 rounded-full bg-accent-soft flex items-center justify-center border border-accent-border overflow-hidden shrink-0 shadow-2xl">
+        <div className="w-14 h-14 rounded-full bg-accent-soft flex items-center justify-center border border-accent-border overflow-hidden shrink-0">
           {user.photoURL ? (
             <img src={user.photoURL} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
           ) : (
-            <UserIcon className="w-10 h-10 text-accent" />
+            <UserIcon className="w-7 h-7 text-accent" />
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="text-2xl font-black text-white truncate">{user.displayName || 'Friend'}</h2>
-          <p className="text-slate-500 text-sm font-medium">{user.email}</p>
-          <div className="flex items-center gap-3 mt-3">
-             <span className="px-2 py-0.5 rounded-md bg-sky-500/10 border border-sky-500/20 text-[10px] font-bold text-sky-400 uppercase tracking-widest">Pro Member</span>
-             <span className="text-[10px] text-slate-600 font-bold uppercase tracking-tighter">Joined {new Date(user.metadata.creationTime || '').toLocaleDateString()}</span>
+          <h2 className="text-lg font-black text-white truncate">{user.displayName || 'Friend'}</h2>
+          <p className="text-slate-500 text-xs">{user.email}</p>
+          <div className="flex items-center gap-2 mt-1.5">
+            <span className="px-2 py-0.5 rounded-md bg-sky-500/10 border border-sky-500/20 text-[10px] font-bold text-sky-400 uppercase tracking-widest">Pro Member</span>
+            <span className="text-[10px] text-slate-600 font-bold uppercase tracking-tighter">Joined {new Date(user.metadata.creationTime || '').toLocaleDateString()}</span>
           </div>
         </div>
       </div>
 
-      <form onSubmit={handleUpdateProfile} className="space-y-8">
-        <section className="space-y-4">
-          <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] ml-2">Personal Identity</h3>
-          <div className="p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-6">
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">Dashboard Display Name</label>
-              <input 
-                type="text"
-                value={newDisplayName}
-                onChange={(e) => setNewDisplayName(e.target.value)}
-                placeholder="How should we call you?"
-                className="w-full bg-background-card border border-white/5 rounded-2xl py-4 px-6 text-sm focus:outline-none focus:ring-2 focus:ring-accent-soft focus:border-accent-border transition-all text-white placeholder:text-slate-700 font-medium"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section className="space-y-4">
-          <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] ml-2">Visual Atmosphere</h3>
-          <div className="p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-8">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {THEMES.map((theme) => (
-                <button
-                  key={theme.id}
-                  type="button"
-                  onClick={() => setCurrentTheme(theme.id)}
-                  className={cn(
-                    "relative p-4 rounded-2xl border text-left transition-all group overflow-hidden",
-                    currentTheme === theme.id ? "border-accent bg-accent-soft" : "border-white/5 bg-white/[0.01] hover:bg-white/[0.03]"
-                  )}
-                >
-                  <div className="flex flex-col gap-3">
-                    <div className="flex gap-1.5">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.main }} />
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.card }} />
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.accent }} />
-                    </div>
-                    <span className={cn(
-                      "text-[11px] font-bold tracking-tight transition-colors",
-                      currentTheme === theme.id ? "text-[#38bdf8]" : "text-slate-400 group-hover:text-slate-200"
-                    )} style={{ color: currentTheme === theme.id ? theme.accent : undefined }}>
-                      {theme.name}
-                    </span>
-                  </div>
-                  {currentTheme === theme.id && (
-                    <div className="absolute top-2 right-2">
-                      <CheckCircle2 className="w-3 h-3 text-accent" />
-                    </div>
-                  )}
-                </button>
-              ))}
-              
-              <button
-                type="button"
-                onClick={() => setCurrentTheme('custom')}
-                className={cn(
-                  "relative p-4 rounded-2xl border text-left transition-all group overflow-hidden",
-                  currentTheme === 'custom' ? "border-accent bg-accent-soft" : "border-white/5 bg-white/[0.01] hover:bg-white/[0.03]"
-                )}
-              >
-                <div className="flex flex-col gap-3">
-                  <div className="flex gap-1.5">
-                   <div className="w-3 h-3 rounded-full bg-gradient-to-tr from-red-500 via-green-500 to-blue-500" />
-                  </div>
-                  <span className={cn(
-                    "text-[11px] font-bold tracking-tight transition-colors",
-                    currentTheme === 'custom' ? "text-accent" : "text-slate-400 group-hover:text-slate-200"
-                  )}>
-                    Custom Accent
-                  </span>
-                </div>
-              </button>
-            </div>
-
-            {currentTheme === 'custom' && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="space-y-4 pt-4 border-t border-white/5"
-              >
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 ml-1">Accent Hex Color</label>
-                <div className="flex items-center gap-4">
-                  <div className="relative flex-1">
-                    <input 
-                      type="text"
-                      value={currentAccent}
-                      onChange={(e) => setCurrentAccent(e.target.value)}
-                      placeholder="#38bdf8"
-                      className="w-full bg-[#0a0f1a] border border-white/5 rounded-2xl py-4 px-6 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/50 transition-all text-white font-mono uppercase"
-                    />
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg shadow-inner border border-white/10" style={{ backgroundColor: currentAccent }} />
-                  </div>
-                  <input 
-                    type="color"
-                    value={currentAccent}
-                    onChange={(e) => setCurrentAccent(e.target.value)}
-                    className="w-14 h-14 rounded-2xl bg-[#0a0f1a] border border-white/10 p-1 cursor-pointer appearance-none overflow-hidden"
-                  />
-                </div>
-              </motion.div>
+      {/* Tab nav */}
+      <div className="flex items-center gap-1 p-1 rounded-2xl bg-white/[0.03] border border-white/5 mb-6 overflow-x-auto">
+        {SETTINGS_TABS.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setSettingsTab(tab.id)}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex-1 justify-center",
+              settingsTab === tab.id
+                ? "bg-accent text-white shadow-lg"
+                : "text-slate-500 hover:text-slate-300 hover:bg-white/5"
             )}
-          </div>
-        </section>
+          >
+            {tab.icon}
+            <span className="hidden sm:inline">{tab.label}</span>
+          </button>
+        ))}
+      </div>
 
-        <section className="space-y-4">
-          <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] ml-2">Advanced Behavior (OneTab Policy)</h3>
-          <div className="p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-10">
-            {/* Startup Policy */}
-            <div className="space-y-4">
-              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">At Browser Startup</label>
-              <div className="space-y-3">
-                <SettingsOption 
-                  active={openOnStartup === 'auto'}
-                  onClick={() => setOpenOnStartup('auto')}
-                  label="Open Lorapok TabMan automatically"
-                  desc="The dashboard will launch instantly when you start Firefox."
-                />
-                <SettingsOption 
-                  active={openOnStartup === 'manual'}
-                  onClick={() => setOpenOnStartup('manual')}
-                  label="Do not open TabMan automatically"
-                  desc="Keep the dashboard closed until you manually open it or use a shortcut."
-                />
-              </div>
-            </div>
-
-            {/* Restoration Policy */}
-            <div className="space-y-4 pt-6 border-t border-white/5">
-              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Upon Tab Restoration</label>
-              <div className="space-y-3">
-                <SettingsOption 
-                  active={restoreBehavior === 'remove'}
-                  onClick={() => setRestoreBehavior('remove')}
-                  label="Remove tabs from my list"
-                  desc="Clean up your groups immediately after restoring them."
-                />
-                <SettingsOption 
-                  active={restoreBehavior === 'keep'}
-                  onClick={() => setRestoreBehavior('keep')}
-                  label="Keep them in your list"
-                  desc="Restored tabs stay in your groups for future sessions."
-                />
-                <SettingsOption 
-                  active={restoreBehavior === 'archive'}
-                  onClick={() => setRestoreBehavior('archive')}
-                  label="Mark them as archived"
-                  desc="Provide a visual indication that you've already read these tabs."
-                />
-              </div>
-            </div>
-
-            {/* Toolbar Policy */}
-            <div className="space-y-4 pt-6 border-t border-white/5">
-              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Toolbar Action</label>
-              <div className="space-y-3">
-                <SettingsOption 
-                  active={toolbarClickBehavior === 'all'}
-                  onClick={() => setToolbarClickBehavior('all')}
-                  label="Send all tabs in window to TabMan"
-                  desc="Default behavior: quickly capture your entire session."
-                />
-                <SettingsOption 
-                  active={toolbarClickBehavior === 'single'}
-                  onClick={() => setToolbarClickBehavior('single')}
-                  label="Send only the current tab"
-                  desc="Precision capture: ignore other open tabs."
-                />
-                <SettingsOption 
-                  active={toolbarClickBehavior === 'popup'}
-                  onClick={() => setToolbarClickBehavior('popup')}
-                  label="Show the TabMan action popup"
-                  desc="Control mode: choose exactly which tabs to send."
-                />
-              </div>
-            </div>
-
-            {/* Duplicates Policy */}
-            <div className="space-y-4 pt-6 border-t border-white/5">
-              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Integrity Policy</label>
-              <div className="space-y-3">
-                <SettingsOption 
-                  active={allowDuplicates === true}
-                  onClick={() => setAllowDuplicates(true)}
-                  label="Allow duplicates in groups"
-                  desc="Keep your groups exactly as they were captured."
-                />
-                <SettingsOption 
-                  active={allowDuplicates === false}
-                  onClick={() => setAllowDuplicates(false)}
-                  label="Block duplicate URLs"
-                  desc="Automatically skip tabs that already exist in your active groups."
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="space-y-4">
-          <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] ml-2">Automation & Cleanliness</h3>
-          <div className="overflow-hidden rounded-[2rem] border border-white/5">
-            <div className="p-8 bg-white/[0.02] flex items-center justify-between group">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
-                  <Archive className="w-5 h-5 text-amber-400" />
-                </div>
-                <div>
-                  <h4 className="text-white font-bold">Auto-Archive Engine</h4>
-                  <p className="text-slate-500 text-xs mt-1">Automatically move inactive tab groups to the archive</p>
-                </div>
-              </div>
-              <button 
-                type="button"
-                onClick={() => setAutoArchiveEnabled(!autoArchiveEnabled)}
-                className={cn(
-                  "w-14 h-7 rounded-full transition-all relative border-2",
-                  autoArchiveEnabled ? "bg-accent border-accent-border" : "bg-white/5 border-white/10"
-                )}
-              >
-                <div className={cn(
-                  "absolute top-1 w-4 h-4 rounded-full transition-all shadow-sm",
-                  autoArchiveEnabled ? "right-1 bg-white scale-110" : "left-1 bg-slate-600"
-                )} />
-              </button>
-            </div>
-            
-            <AnimatePresence>
-              {autoArchiveEnabled && (
-                <motion.div 
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="bg-white/[0.01] border-t border-white/5"
-                >
-                  <div className="p-8">
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Inactivity Threshold</label>
-                    <div className="flex items-center gap-6">
-                      <input 
-                        type="range"
-                        min="1"
-                        max="90"
-                        value={autoArchiveDays}
-                        onChange={(e) => setAutoArchiveDays(parseInt(e.target.value))}
-                        className="flex-1 h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer accent-sky-500"
-                      />
-                      <div className="w-20 px-3 py-2 rounded-xl bg-[#0a0f1a] border border-white/10 text-center">
-                        <span className="text-sky-400 font-bold text-sm tracking-tighter">{autoArchiveDays}</span>
-                        <span className="text-[10px] text-slate-600 block leading-none font-bold">DAYS</span>
+      {/* Tab panels */}
+      <form onSubmit={handleUpdateProfile}>
+        <AnimatePresence mode="wait">
+          {settingsTab === 'appearance' && (
+            <motion.div key="appearance" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.15 }} className="space-y-4">
+              <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-5">
+                <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em]">Color Theme</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {THEMES.map((theme) => (
+                    <button key={theme.id} type="button" onClick={() => setCurrentTheme(theme.id)}
+                      className={cn("relative p-4 rounded-2xl border text-left transition-all group overflow-hidden",
+                        currentTheme === theme.id ? "border-accent bg-accent-soft" : "border-white/5 bg-white/[0.01] hover:bg-white/[0.03]")}>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex gap-1.5">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.main }} />
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.card }} />
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.accent }} />
+                        </div>
+                        <span className={cn("text-[11px] font-bold tracking-tight transition-colors", currentTheme === theme.id ? "text-accent" : "text-slate-400 group-hover:text-slate-200")}>
+                          {theme.name}
+                        </span>
                       </div>
+                      {currentTheme === theme.id && <div className="absolute top-2 right-2"><CheckCircle2 className="w-3 h-3 text-accent" /></div>}
+                    </button>
+                  ))}
+                  <button type="button" onClick={() => setCurrentTheme('custom')}
+                    className={cn("relative p-4 rounded-2xl border text-left transition-all group overflow-hidden",
+                      currentTheme === 'custom' ? "border-accent bg-accent-soft" : "border-white/5 bg-white/[0.01] hover:bg-white/[0.03]")}>
+                    <div className="flex flex-col gap-2">
+                      <div className="w-3 h-3 rounded-full bg-gradient-to-tr from-red-500 via-green-500 to-blue-500" />
+                      <span className={cn("text-[11px] font-bold tracking-tight", currentTheme === 'custom' ? "text-accent" : "text-slate-400 group-hover:text-slate-200")}>Custom Accent</span>
                     </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </section>
-
-        <section className="space-y-4">
-          <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] ml-2">Exclusion Policy</h3>
-          <div className="p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-6">
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">Excluded Domains (One per line)</label>
-              <textarea 
-                value={excludedDomains.join('\n')}
-                onChange={(e) => setExcludedDomains(e.target.value.split('\n').filter(d => d.trim()))}
-                placeholder="news.google.com&#10;internal.company.com"
-                className="w-full bg-[#0a0f1a] border border-white/5 rounded-2xl py-4 px-6 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/50 transition-all text-white placeholder:text-slate-700 font-medium min-h-[120px]"
-              />
-              <p className="mt-3 text-[10px] text-slate-600 font-medium italic">Tabs from these domains will be ignored during synchronization if detected.</p>
-            </div>
-          </div>
-        </section>
-
-        <section className="space-y-4">
-          <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] ml-2">Tab Snooze</h3>
-          <div className="p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-6">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center border border-sky-500/20 shrink-0">
-                <Clock className="w-5 h-5 text-sky-400" />
-              </div>
-              <div className="flex-1">
-                <h4 className="text-white font-bold text-sm mb-1">Inactivity Timeout</h4>
-                <p className="text-slate-500 text-[11px] mb-4">Tabs inactive for this long will be automatically unloaded from memory to save RAM.</p>
-                <div className="flex items-center gap-4">
-                  <input
-                    type="number"
-                    min={1}
-                    max={10080}
-                    value={snoozeTimeoutMinutes}
-                    onChange={(e) => setSnoozeTimeoutMinutes(Math.max(1, Math.min(10080, Number(e.target.value))))}
-                    className="w-28 bg-background-card border border-white/5 rounded-2xl py-3 px-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-soft transition-all"
-                  />
-                  <span className="text-slate-400 text-sm font-medium">minutes</span>
-                  <span className="text-slate-600 text-[10px]">(min: 1, max: 10080 = 7 days)</span>
+                  </button>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="space-y-4">
-          <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] ml-2">Migration Hub</h3>
-          <div className="p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-10">
-            {/* Export Section */}
-            <div className="space-y-4">
-              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Data Preservation</label>
-              <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between group">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center border border-sky-500/20">
-                    <Download className="w-5 h-5 text-sky-400" />
-                  </div>
-                  <div>
-                    <h4 className="text-white font-bold text-sm">Export all tab groups</h4>
-                    <p className="text-slate-500 text-[11px] mt-0.5">Download a JSON backup of your entire session history.</p>
-                  </div>
-                </div>
-                <button 
-                  type="button"
-                  onClick={handleExport}
-                  className="px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold transition-all border border-white/10 active:scale-95"
-                >
-                  Download .json
-                </button>
-              </div>
-            </div>
-
-            {/* Import Section */}
-            <div className="space-y-6 pt-6 border-t border-white/5">
-              <div className="flex items-center justify-between">
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Import from External Sources</label>
-                {importResult && (
-                  <motion.div 
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-2 text-emerald-400 text-[10px] font-black uppercase tracking-widest"
-                  >
-                    <CheckCircle2 className="w-3 h-3" /> Successfully Imported {importResult.count} tabs
+                {currentTheme === 'custom' && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-3 pt-4 border-t border-white/5">
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Accent Hex Color</label>
+                    <div className="flex items-center gap-3">
+                      <div className="relative flex-1">
+                        <input type="text" value={currentAccent} onChange={(e) => setCurrentAccent(e.target.value)} placeholder="#38bdf8"
+                          className="w-full bg-[#0a0f1a] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 text-white font-mono uppercase" />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg border border-white/10" style={{ backgroundColor: currentAccent }} />
+                      </div>
+                      <input type="color" value={currentAccent} onChange={(e) => setCurrentAccent(e.target.value)}
+                        className="w-12 h-12 rounded-2xl bg-[#0a0f1a] border border-white/10 p-1 cursor-pointer" />
+                    </div>
                   </motion.div>
                 )}
               </div>
+              <CommitButton isUpdatingProfile={isUpdatingProfile} />
+            </motion.div>
+          )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* JSON Import */}
-                <div className="p-6 rounded-2xl bg-white/[0.01] border border-white/5 space-y-4 hover:border-accent/30 transition-colors group">
-                  <div className="w-10 h-10 rounded-xl bg-accent-soft flex items-center justify-center border border-accent-border">
-                    <BookmarkPlus className="w-5 h-5 text-accent" />
+          {settingsTab === 'behavior' && (
+            <motion.div key="behavior" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.15 }} className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Startup */}
+                <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-3">
+                  <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] mb-4">At Browser Startup</h3>
+                  <SettingsOption active={openOnStartup === 'auto'} onClick={() => setOpenOnStartup('auto')} label="Open TabMan automatically" desc="Dashboard launches when Firefox starts." />
+                  <SettingsOption active={openOnStartup === 'manual'} onClick={() => setOpenOnStartup('manual')} label="Do not open automatically" desc="Open manually or via shortcut." />
+                </div>
+                {/* Toolbar */}
+                <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-3">
+                  <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] mb-4">Toolbar Action</h3>
+                  <SettingsOption active={toolbarClickBehavior === 'all'} onClick={() => setToolbarClickBehavior('all')} label="Send all tabs in window" desc="Capture your entire session." />
+                  <SettingsOption active={toolbarClickBehavior === 'single'} onClick={() => setToolbarClickBehavior('single')} label="Send only current tab" desc="Precision capture." />
+                  <SettingsOption active={toolbarClickBehavior === 'popup'} onClick={() => setToolbarClickBehavior('popup')} label="Show action popup" desc="Choose which tabs to send." />
+                </div>
+                {/* Restoration */}
+                <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-3">
+                  <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] mb-4">Upon Tab Restoration</h3>
+                  <SettingsOption active={restoreBehavior === 'remove'} onClick={() => setRestoreBehavior('remove')} label="Remove tabs from list" desc="Clean up groups after restoring." />
+                  <SettingsOption active={restoreBehavior === 'keep'} onClick={() => setRestoreBehavior('keep')} label="Keep in list" desc="Restored tabs stay in groups." />
+                  <SettingsOption active={restoreBehavior === 'archive'} onClick={() => setRestoreBehavior('archive')} label="Mark as archived" desc="Visual indicator you've read these tabs." />
+                </div>
+                {/* Integrity */}
+                <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-3">
+                  <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] mb-4">Integrity Policy</h3>
+                  <SettingsOption active={allowDuplicates === true} onClick={() => setAllowDuplicates(true)} label="Allow duplicates" desc="Keep groups exactly as captured." />
+                  <SettingsOption active={allowDuplicates === false} onClick={() => setAllowDuplicates(false)} label="Block duplicate URLs" desc="Skip tabs already in active groups." />
+                </div>
+              </div>
+              <CommitButton isUpdatingProfile={isUpdatingProfile} />
+            </motion.div>
+          )}
+
+          {settingsTab === 'automation' && (
+            <motion.div key="automation" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.15 }} className="space-y-4">
+              <div className="overflow-hidden rounded-[2rem] border border-white/5">
+                <div className="p-6 bg-white/[0.02] flex items-center justify-between">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
+                      <Archive className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-bold text-sm">Auto-Archive Engine</h4>
+                      <p className="text-slate-500 text-xs mt-0.5">Move inactive tab groups to archive automatically</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-white font-bold text-sm">Lorapok / JSON</h4>
-                    <p className="text-slate-500 text-[11px] mt-0.5">Restore from a previous Lorapok TabMan export.</p>
-                  </div>
-                  <input 
-                    type="file" 
-                    ref={importFileRef}
-                    className="hidden" 
-                    accept=".json"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (ev) => handleImport('json', ev.target?.result as string);
-                        reader.readAsText(file);
-                      }
-                    }}
-                  />
-                  <button 
-                    type="button"
-                    disabled={isImporting}
-                    onClick={() => importFileRef.current?.click()}
-                    className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-[11px] font-bold transition-all border border-white/5 flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    {isImporting ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />} Choose File
+                  <button type="button" onClick={() => setAutoArchiveEnabled(!autoArchiveEnabled)}
+                    className={cn("w-14 h-7 rounded-full transition-all relative border-2 shrink-0", autoArchiveEnabled ? "bg-accent border-accent-border" : "bg-white/5 border-white/10")}>
+                    <div className={cn("absolute top-1 w-4 h-4 rounded-full transition-all shadow-sm", autoArchiveEnabled ? "right-1 bg-white scale-110" : "left-1 bg-slate-600")} />
                   </button>
                 </div>
-
-                {/* OneTab Import */}
-                <div className="p-6 rounded-2xl bg-white/[0.01] border border-white/5 space-y-4 hover:border-amber-500/30 transition-colors group">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
-                    <History className="w-5 h-5 text-amber-400" />
+                <AnimatePresence>
+                  {autoArchiveEnabled && (
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="bg-white/[0.01] border-t border-white/5">
+                      <div className="p-6">
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Inactivity Threshold</label>
+                        <div className="flex items-center gap-5">
+                          <input type="range" min="1" max="90" value={autoArchiveDays} onChange={(e) => setAutoArchiveDays(parseInt(e.target.value))}
+                            className="flex-1 h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer accent-sky-500" />
+                          <div className="w-16 px-2 py-2 rounded-xl bg-[#0a0f1a] border border-white/10 text-center">
+                            <span className="text-sky-400 font-bold text-sm">{autoArchiveDays}</span>
+                            <span className="text-[10px] text-slate-600 block font-bold">DAYS</span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+              <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center border border-sky-500/20 shrink-0">
+                    <Clock className="w-5 h-5 text-sky-400" />
                   </div>
-                  <div>
-                    <h4 className="text-white font-bold text-sm">OneTab Migration</h4>
-                    <p className="text-slate-500 text-[11px] mt-0.5">Paste your OneTab export data here to migrate instantly.</p>
-                  </div>
-                  <div className="relative">
-                    <textarea 
-                      placeholder="Paste OneTab text here..."
-                      className="w-full bg-[#030711] border border-white/5 rounded-xl p-3 text-[10px] text-slate-400 focus:outline-none focus:border-amber-500/50 min-h-[80px] font-mono resize-none transition-all"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && e.ctrlKey) {
-                          handleImport('onetab', (e.target as HTMLTextAreaElement).value);
-                          (e.target as HTMLTextAreaElement).value = '';
-                        }
-                      }}
-                    />
-                    <button 
-                      type="button"
-                      disabled={isImporting}
-                      onClick={(e) => {
-                        const textarea = (e.currentTarget.previousSibling as HTMLTextAreaElement);
-                        if (textarea.value) {
-                          handleImport('onetab', textarea.value);
-                          textarea.value = '';
-                        }
-                      }}
-                      className="absolute bottom-2 right-2 p-2 rounded-lg bg-amber-500 text-black hover:bg-amber-400 transition-colors disabled:opacity-50"
-                    >
-                      <ChevronRight className="w-3 h-3" />
-                    </button>
+                  <div className="flex-1">
+                    <h4 className="text-white font-bold text-sm">Tab Snooze Timeout</h4>
+                    <p className="text-slate-500 text-xs mt-0.5 mb-4">Tabs inactive for this long are unloaded from memory to save RAM.</p>
+                    <div className="flex items-center gap-3">
+                      <input type="number" min={1} max={10080} value={snoozeTimeoutMinutes}
+                        onChange={(e) => setSnoozeTimeoutMinutes(Math.max(1, Math.min(10080, Number(e.target.value))))}
+                        className="w-24 bg-background-card border border-white/5 rounded-2xl py-3 px-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-soft transition-all" />
+                      <span className="text-slate-400 text-sm font-medium">minutes</span>
+                      <span className="text-slate-600 text-[10px]">max 10080 (7 days)</span>
+                    </div>
                   </div>
                 </div>
               </div>
-              <p className="text-[10px] text-slate-600 font-medium italic text-center">We currently support native JSON and OneTab's text format. AI-powered auto-migration for other browsers is coming soon.</p>
-            </div>
-          </div>
-        </section>
+              <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-4">
+                <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em]">Excluded Domains</h3>
+                <textarea 
+                  value={excludedDomains.join('\n')}
+                  onChange={(e) => setExcludedDomains(e.target.value.split('\n').filter((d: string) => d.trim()))}
+                  placeholder={"news.google.com\ninternal.company.com"}
+                  className="w-full bg-[#0a0f1a] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-white placeholder:text-slate-700 font-medium min-h-[100px] resize-none"
+                />
+                <p className="text-[10px] text-slate-600 italic">Tabs from these domains will be ignored during sync.</p>
+              </div>
+              <CommitButton isUpdatingProfile={isUpdatingProfile} />
+            </motion.div>
+          )}
 
-        {authError && (
-          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center gap-3">
-             <AlertCircle className="w-5 h-5 text-red-500" />
-             <p className="text-xs text-red-400 font-medium">{authError}</p>
-          </div>
-        )}
-
-        <div className="pt-4">
-          <button 
-            type="submit"
-            disabled={isUpdatingProfile}
-            className="w-full py-5 rounded-3xl bg-accent hover:opacity-90 text-white font-black text-sm transition-all shadow-2xl disabled:opacity-50 flex items-center justify-center gap-3 uppercase tracking-[0.2em]"
-          >
-            {isUpdatingProfile ? (
-              <RefreshCw className="w-5 h-5 animate-spin" />
-            ) : (
-              <>
-                <Save className="w-5 h-5" /> Commit Preferences
-              </>
-            )}
-          </button>
-        </div>
+          {settingsTab === 'data' && (
+            <motion.div key="data" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.15 }} className="space-y-4">
+              <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center border border-sky-500/20 shrink-0">
+                    <Download className="w-5 h-5 text-sky-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-sm">Export All Groups</h4>
+                    <p className="text-slate-500 text-xs mt-0.5">Download a JSON backup of your entire session history.</p>
+                  </div>
+                </div>
+                <button type="button" onClick={handleExport}
+                  className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold transition-all border border-white/10 active:scale-95 shrink-0">
+                  Download .json
+                </button>
+              </div>
+              <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-5">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em]">Import from External Sources</h3>
+                  {importResult && (
+                    <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-1.5 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+                      <CheckCircle2 className="w-3 h-3" /> {importResult.count} tabs imported
+                    </motion.div>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-5 rounded-2xl bg-white/[0.01] border border-white/5 space-y-4 hover:border-accent/30 transition-colors">
+                    <div className="w-9 h-9 rounded-xl bg-accent-soft flex items-center justify-center border border-accent-border">
+                      <BookmarkPlus className="w-4 h-4 text-accent" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-bold text-sm">Lorapok / JSON</h4>
+                      <p className="text-slate-500 text-[11px] mt-0.5">Restore from a previous Lorapok TabMan export.</p>
+                    </div>
+                    <input type="file" ref={importFileRef} className="hidden" accept=".json"
+                      onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onload = (ev) => handleImport('json', ev.target?.result as string); reader.readAsText(file); } }} />
+                    <button type="button" disabled={isImporting} onClick={() => importFileRef.current?.click()}
+                      className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-[11px] font-bold transition-all border border-white/5 flex items-center justify-center gap-2 disabled:opacity-50">
+                      {isImporting ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />} Choose File
+                    </button>
+                  </div>
+                  <div className="p-5 rounded-2xl bg-white/[0.01] border border-white/5 space-y-4 hover:border-amber-500/30 transition-colors">
+                    <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
+                      <History className="w-4 h-4 text-amber-400" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-bold text-sm">OneTab Migration</h4>
+                      <p className="text-slate-500 text-[11px] mt-0.5">Paste your OneTab export data to migrate instantly.</p>
+                    </div>
+                    <div className="relative">
+                      <textarea placeholder="Paste OneTab text here..."
+                        className="w-full bg-[#030711] border border-white/5 rounded-xl p-3 text-[10px] text-slate-400 focus:outline-none focus:border-amber-500/50 min-h-[72px] font-mono resize-none transition-all"
+                        onKeyDown={(e) => { if (e.key === 'Enter' && e.ctrlKey) { handleImport('onetab', (e.target as HTMLTextAreaElement).value); (e.target as HTMLTextAreaElement).value = ''; } }} />
+                      <button type="button" disabled={isImporting}
+                        onClick={(e) => { const ta = e.currentTarget.previousSibling as HTMLTextAreaElement; if (ta.value) { handleImport('onetab', ta.value); ta.value = ''; } }}
+                        className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-amber-500 text-black hover:bg-amber-400 transition-colors disabled:opacity-50">
+                        <ChevronRight className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-600 italic text-center">Native JSON and OneTab supported. AI-powered auto-migration coming soon.</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </form>
     </motion.div>
   );
 }
+
 
 function HelpView({ setShowDeveloperModal }: { setShowDeveloperModal: (val: boolean) => void }) {
   return (
@@ -2878,14 +2676,24 @@ function HelpView({ setShowDeveloperModal }: { setShowDeveloperModal: (val: bool
 
         <div className="p-8 rounded-[2.5rem] bg-[#0a0f1a] border border-white/10 group hover:border-sky-500/30 transition-all cursor-pointer overflow-hidden relative" onClick={() => setShowDeveloperModal(true)}>
           <div className="absolute -top-12 -right-12 w-32 h-32 bg-sky-500/10 blur-2xl rounded-full" />
-          <div className="relative z-10 space-y-6">
-            <div className="w-12 h-12 rounded-2xl bg-sky-500/10 flex items-center justify-center border border-sky-500/20 group-hover:scale-110 transition-transform">
-              <UserCheck className="w-6 h-6 text-sky-400" />
+          <div className="relative z-10 space-y-4">
+            <div className="relative w-16 h-16">
+              <motion.div
+                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute inset-0 rounded-2xl bg-sky-500/20 blur-lg"
+              />
+              <img
+                src="https://maijied.github.io/Maijied/avatar.jpg"
+                alt="Maizied Hasan"
+                className="w-16 h-16 rounded-2xl border border-white/20 object-cover relative z-10 group-hover:scale-105 transition-transform duration-300"
+              />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-white mb-2">Meet Developer</h3>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                Lorapok TabMan was crafted with passion in Bangladesh to solve the world's tab clutter crisis.
+              <h3 className="text-lg font-bold text-white mb-1">Maizied Hasan</h3>
+              <p className="text-sky-400 text-[10px] font-bold uppercase tracking-widest mb-2">Founder · Lorapok Labs</p>
+              <p className="text-slate-500 text-xs leading-relaxed">
+                Crafted with passion in Bangladesh to solve the world's tab clutter crisis.
               </p>
             </div>
             <div className="flex items-center gap-2 text-sky-400 font-bold text-[10px] uppercase tracking-widest">
@@ -2972,251 +2780,170 @@ function FeatureCard({ icon, title, desc }: { icon: React.ReactNode, title: stri
 }
 
 function MemoryAnalytics({ groups }: { groups: TabGroup[] }) {
-  // Aggregate data for visualization
+  const totalTabs = groups.reduce((acc, g) => acc + g.tabs.length, 0);
+  const totalMemory = totalTabs * 50;
+  const avgTabsPerGroup = groups.length > 0 ? (totalTabs / groups.length).toFixed(1) : '0';
+  const COLORS = ['#38bdf8', '#818cf8', '#c084fc', '#f472b6', '#fb7185'];
+
   const memoryData = groups.reduce((acc: any[], group) => {
     const date = new Date(group.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const existing = acc.find(item => item.date === date);
-    const memorySaved = group.tabs.length * 50; // Estimate 50MB per tab
-
-    if (existing) {
-      existing.memory += memorySaved;
-      existing.tabs += group.tabs.length;
-      existing.groups += 1;
-    } else {
-      acc.push({ date, memory: memorySaved, tabs: group.tabs.length, groups: 1 });
-    }
+    const memorySaved = group.tabs.length * 50;
+    if (existing) { existing.memory += memorySaved; existing.tabs += group.tabs.length; existing.groups += 1; }
+    else { acc.push({ date, memory: memorySaved, tabs: group.tabs.length, groups: 1 }); }
     return acc;
   }, []).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(-7);
 
-  const totalTabs = groups.reduce((acc, g) => acc + g.tabs.length, 0);
-  const totalMemory = totalTabs * 50;
-
-  // Aggregate domain data
   const domainDataMap = groups.reduce((acc: Record<string, { domain: string, memory: number, count: number }>, group) => {
     group.tabs.forEach((tab: any) => {
       try {
-        const urlString = tab.url.startsWith('http') ? tab.url : `https://${tab.url}`;
-        const url = new URL(urlString);
+        const url = new URL(tab.url.startsWith('http') ? tab.url : `https://${tab.url}`);
         const domain = url.hostname.replace('www.', '');
-        const memory = 50; // Estimate 50MB per tab
-        if (acc[domain]) {
-          acc[domain].memory += memory;
-          acc[domain].count += 1;
-        } else {
-          acc[domain] = { domain, memory, count: 1 };
-        }
-      } catch (e) {
-        const domain = 'other';
-        const memory = 50;
-        if (acc[domain]) {
-          acc[domain].memory += memory;
-          acc[domain].count += 1;
-        } else {
-          acc[domain] = { domain, memory, count: 1 };
-        }
-      }
+        if (acc[domain]) { acc[domain].memory += 50; acc[domain].count += 1; }
+        else { acc[domain] = { domain, memory: 50, count: 1 }; }
+      } catch { if (acc['other']) { acc['other'].memory += 50; acc['other'].count += 1; } else { acc['other'] = { domain: 'other', memory: 50, count: 1 }; } }
     });
     return acc;
   }, {});
+  const topDomains = Object.values(domainDataMap).sort((a, b) => b.memory - a.memory).slice(0, 5);
 
-  const topDomains = Object.values(domainDataMap)
-    .sort((a, b) => b.memory - a.memory)
-    .slice(0, 5);
-
-  const avgTabsPerGroup = groups.length > 0 ? (totalTabs / groups.length).toFixed(1) : 0;
-
-  const COLORS = ['#38bdf8', '#818cf8', '#c084fc', '#f472b6', '#fb7185'];
+  const EmptyChart = ({ label }: { label: string }) => (
+    <div className="h-[220px] flex flex-col items-center justify-center gap-3 text-center">
+      <BarChart3 className="w-8 h-8 text-slate-700" />
+      <p className="text-xs text-slate-600 font-medium">{label}</p>
+    </div>
+  );
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-8"
-    >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Zap className="w-12 h-12 text-sky-400" />
-          </div>
-          <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Total Memory Reclaimed</h4>
-          <div className="text-4xl font-black text-white mb-2">
-            {totalMemory >= 1024 ? `${(totalMemory / 1024).toFixed(2)} GB` : `${totalMemory} MB`}
-          </div>
-          <p className="text-sm text-slate-400">Based on ~50MB per inactive tab</p>
-        </div>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
 
-        <div className="p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Layout className="w-12 h-12 text-purple-400" />
+      {/* KPI row */}
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { icon: <Zap className="w-5 h-5 text-sky-400" />, label: 'Memory Reclaimed', value: totalMemory >= 1024 ? `${(totalMemory/1024).toFixed(2)} GB` : `${totalMemory} MB`, sub: '~50MB per inactive tab', color: 'text-sky-400', bg: 'bg-sky-500/10 border-sky-500/20' },
+          { icon: <Layout className="w-5 h-5 text-purple-400" />, label: 'Tabs Offloaded', value: String(totalTabs), sub: `Across ${groups.length} groups`, color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
+          { icon: <TrendingUp className="w-5 h-5 text-emerald-400" />, label: 'Efficiency Rating', value: String(avgTabsPerGroup), sub: 'Avg tabs per save', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+        ].map((kpi) => (
+          <div key={kpi.label} className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center gap-5">
+            <div className={cn('w-12 h-12 rounded-xl flex items-center justify-center border shrink-0', kpi.bg)}>
+              {kpi.icon}
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-1">{kpi.label}</p>
+              <p className={cn('text-2xl font-black', kpi.color)}>{kpi.value}</p>
+              <p className="text-[10px] text-slate-600 mt-0.5">{kpi.sub}</p>
+            </div>
           </div>
-          <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Tabs Offloaded</h4>
-          <div className="text-4xl font-black text-white mb-2">{totalTabs}</div>
-          <p className="text-sm text-slate-400">Across {groups.length} individual groups</p>
-        </div>
-
-        <div className="p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-            <TrendingUp className="w-12 h-12 text-emerald-400" />
-          </div>
-          <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Efficiency Rating</h4>
-          <div className="text-4xl font-black text-white mb-2">{avgTabsPerGroup}</div>
-          <p className="text-sm text-slate-400">Average tabs consolidated per save</p>
-        </div>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="p-8 rounded-[2.5rem] bg-[#0a0f1a] border border-white/5 shadow-2xl">
-          <h3 className="text-lg font-bold text-white mb-8 flex items-center gap-3">
-            <BarChart3 className="w-5 h-5 text-sky-400" /> Memory Recovery Trend (Last 7 Days)
+      {/* Charts row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+          <h3 className="text-sm font-bold text-white mb-5 flex items-center gap-2">
+            <BarChart3 className="w-4 h-4 text-sky-400" /> Memory Recovery Trend (Last 7 Days)
           </h3>
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
+          {memoryData.length === 0 ? <EmptyChart label="Save tab groups to see your memory recovery trend" /> : (
+            <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={memoryData}>
                 <defs>
                   <linearGradient id="colorMem" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.3}/>
+                    <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.25}/>
                     <stop offset="95%" stopColor="#38bdf8" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="#475569" 
-                  fontSize={10} 
-                  tickLine={false} 
-                  axisLine={false}
-                  dy={10}
-                />
-                <YAxis 
-                  stroke="#475569" 
-                  fontSize={10} 
-                  tickLine={false} 
-                  axisLine={false}
-                  tickFormatter={(val) => `${val}MB`}
-                />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', fontSize: '12px' }}
-                  itemStyle={{ color: '#38bdf8' }}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="memory" 
-                  stroke="#38bdf8" 
-                  fillOpacity={1} 
-                  fill="url(#colorMem)" 
-                  strokeWidth={3}
-                />
+                <XAxis dataKey="date" stroke="#475569" fontSize={10} tickLine={false} axisLine={false} dy={8} />
+                <YAxis stroke="#475569" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}MB`} />
+                <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '10px', fontSize: '11px' }} itemStyle={{ color: '#38bdf8' }} />
+                <Area type="monotone" dataKey="memory" stroke="#38bdf8" fillOpacity={1} fill="url(#colorMem)" strokeWidth={2.5} />
               </AreaChart>
             </ResponsiveContainer>
-          </div>
+          )}
         </div>
 
-        <div className="p-8 rounded-[2.5rem] bg-[#0a0f1a] border border-white/5 shadow-2xl">
-          <h3 className="text-lg font-bold text-white mb-8 flex items-center gap-3">
-            <PieChartIcon className="w-5 h-5 text-purple-400" /> Tab Distribution
+        <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+          <h3 className="text-sm font-bold text-white mb-5 flex items-center gap-2">
+            <PieChartIcon className="w-4 h-4 text-purple-400" /> Tab Distribution
           </h3>
-          <div className="h-[300px] w-full flex flex-col md:flex-row items-center">
-            <div className="flex-1 h-full w-full">
-              <ResponsiveContainer width="100%" height="100%">
+          {memoryData.length === 0 ? <EmptyChart label="Save tab groups to see tab distribution" /> : (
+            <div className="flex items-center gap-4 h-[220px]">
+              <ResponsiveContainer width="55%" height={220}>
                 <PieChart>
-                  <Pie
-                    data={memoryData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="tabs"
-                  >
-                    {memoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
+                  <Pie data={memoryData} cx="50%" cy="50%" innerRadius={55} outerRadius={75} paddingAngle={4} dataKey="tabs">
+                    {memoryData.map((_: any, index: number) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
                   </Pie>
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', fontSize: '12px' }}
-                  />
+                  <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '10px', fontSize: '11px' }} />
                 </PieChart>
               </ResponsiveContainer>
+              <div className="flex flex-col gap-2.5 flex-1 overflow-hidden">
+                {memoryData.map((entry: any, index: number) => (
+                  <div key={entry.date} className="flex items-center gap-2 min-w-0">
+                    <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                    <span className="text-[10px] text-slate-400 font-bold truncate flex-1">{entry.date}</span>
+                    <span className="text-[10px] text-white font-black shrink-0">{entry.tabs}t</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-col gap-3 p-6 min-w-[150px]">
-              {memoryData.map((entry, index) => (
-                <div key={entry.date} className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{entry.date}</span>
-                  <span className="text-xs text-white font-black ml-auto">{entry.tabs} tabs</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="p-8 rounded-[2.5rem] bg-[#0a0f1a] border border-white/5 shadow-2xl lg:col-span-2">
-          <h3 className="text-lg font-bold text-white mb-8 flex items-center gap-3">
-            <Globe className="w-5 h-5 text-emerald-400" /> Memory usage by Domain
+      {/* Domain + Achievement row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 lg:col-span-2">
+          <h3 className="text-sm font-bold text-white mb-5 flex items-center gap-2">
+            <Globe className="w-4 h-4 text-emerald-400" /> Memory Usage by Domain
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-            <div className="space-y-6">
+          {topDomains.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-10 text-center">
+              <Globe className="w-8 h-8 text-slate-700" />
+              <p className="text-xs text-slate-600 font-medium">Save tab groups to see domain breakdown</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
               {topDomains.map((item, index) => (
-                <div key={item.domain} className="space-y-2">
+                <div key={item.domain} className="space-y-1.5">
                   <div className="flex items-center justify-between text-[11px]">
-                    <div className="flex items-center gap-2">
-                      <span className="text-slate-500 font-mono font-bold">0{index + 1}</span>
-                      <span className="text-slate-200 font-bold truncate max-w-[150px]">{item.domain}</span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-slate-600 font-mono font-bold shrink-0">0{index + 1}</span>
+                      <span className="text-slate-300 font-bold truncate">{item.domain}</span>
+                      <span className="text-slate-600 shrink-0">{item.count} tabs</span>
                     </div>
-                    <span className="text-sky-400 font-black">
-                      {item.memory >= 1024 ? `${(item.memory / 1024).toFixed(1)}GB` : `${item.memory}MB`}
+                    <span className="text-sky-400 font-black shrink-0 ml-3">
+                      {item.memory >= 1024 ? `${(item.memory/1024).toFixed(1)}GB` : `${item.memory}MB`}
                     </span>
                   </div>
-                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(item.memory / topDomains[0].memory) * 100}%` }}
-                      transition={{ duration: 1, delay: index * 0.1 }}
-                      className="h-full bg-gradient-to-r from-sky-500 to-indigo-500 shadow-[0_0_10px_rgba(56,189,248,0.2)]"
+                  <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${(item.memory / topDomains[0].memory) * 100}%` }}
+                      transition={{ duration: 0.8, delay: index * 0.08 }}
+                      className="h-full rounded-full"
+                      style={{ background: `linear-gradient(90deg, ${COLORS[index % COLORS.length]}, ${COLORS[(index + 1) % COLORS.length]})` }}
                     />
                   </div>
                 </div>
               ))}
             </div>
-            
-            <div className="h-full min-h-[200px] bg-white/[0.01] rounded-3xl border border-white/5 p-6 flex flex-col justify-center">
-               <div className="flex items-center gap-4 mb-4">
-                 <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                   <TrendingUp className="w-5 h-5 text-emerald-400" />
-                 </div>
-                 <h4 className="text-sm font-bold text-slate-300">Domain Efficiency</h4>
-               </div>
-               <p className="text-xs text-slate-500 leading-relaxed mb-6">
-                 {topDomains.length > 0 
-                   ? `You've saved the most memory from ${topDomains[0].domain}, consolidating ${topDomains[0].count} sessions into the cloud.`
-                   : "Consolidate more tab groups to see memory distribution analysis across your most visited domains."
-                 }
-               </p>
-               <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-400 uppercase tracking-widest bg-emerald-500/5 w-fit px-3 py-1.5 rounded-lg border border-emerald-500/10">
-                 <CheckCircle2 className="w-3 h-3" /> System Optimized
-               </div>
-            </div>
-          </div>
+          )}
         </div>
 
-        <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-sky-500/10 to-purple-500/5 border border-white/10 flex flex-col justify-center text-center">
-        <div className="flex flex-col md:flex-row items-center gap-8">
-          <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
-            <Zap className="w-8 h-8 text-sky-400" />
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-sky-500/10 via-purple-500/5 to-transparent border border-white/5 flex flex-col justify-between gap-6">
+          <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">
+            <Zap className="w-6 h-6 text-sky-400" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-white mb-2">Sustainable Browsing Achievement</h3>
-            <p className="text-slate-400 text-sm leading-relaxed">
-              By using Lorapok TabMan, you've prevented your browser from consuming significant system resources. 
-              This not only speeds up your machine but also reduces energy consumption from CPU-heavy background tabs. 
-              Keep collapsing to maximize your focus!
+            <h3 className="text-base font-bold text-white mb-2">Sustainable Browsing</h3>
+            <p className="text-slate-400 text-xs leading-relaxed">
+              By using Lorapok TabMan you've prevented your browser from consuming significant system resources — speeding up your machine and reducing energy from CPU-heavy background tabs.
             </p>
+          </div>
+          <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-400 uppercase tracking-widest bg-emerald-500/5 w-fit px-3 py-1.5 rounded-lg border border-emerald-500/10">
+            <CheckCircle2 className="w-3 h-3" /> System Optimized
           </div>
         </div>
       </div>
-    </div>
+
     </motion.div>
   );
 }
@@ -3258,11 +2985,10 @@ function FooterConnectLink({ href, icon, label }: { href: string, icon: React.Re
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="p-2 rounded-xl bg-white/[0.02] border border-white/5 text-slate-500 hover:text-sky-400 hover:bg-white/5 hover:border-sky-500/30 transition-all flex items-center gap-2 group/footerlink"
+      className="p-3 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-sky-400 hover:bg-sky-500/10 hover:border-sky-500/30 transition-all"
       title={label}
     >
       {icon}
-      <span className="text-[10px] font-bold hidden sm:inline">{label}</span>
     </a>
   );
 }
@@ -3731,7 +3457,7 @@ function TabGroupItem({
                     <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/30 backdrop-blur-sm z-10">
                       <img
                         src="/logo.png"
-                        alt="Tab snoozed � Lorapok TabMan"
+                        alt="Tab snoozed � Lorapok TabMan"
                         className="w-8 h-8 opacity-80"
                       />
                     </div>

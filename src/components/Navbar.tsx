@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Github, Download, X, CheckCircle2, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Logo from './Logo';
@@ -102,6 +102,21 @@ function InstallModal({ onClose }: { onClose: () => void }) {
 
 export default function Navbar() {
   const [showInstallModal, setShowInstallModal] = useState(false);
+  const location = useLocation();
+
+  const scrollToSection = (sectionId: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const isOnLanding = location.pathname === '/';
+    if (isOnLanding) {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Navigate to landing page first, then scroll after it mounts
+      window.location.href = `/#/`;
+      setTimeout(() => {
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+  };
 
   return (
     <>
@@ -120,9 +135,9 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center gap-8">
             <Link to="/" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Home</Link>
-            <a href="#features" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Features</a>
-            <a href="#architecture" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Architecture</a>
-            <a href="#github" className="text-sm font-medium text-slate-400 hover:text-white transition-colors flex items-center gap-1">
+            <a href="#features" onClick={scrollToSection('features')} className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Features</a>
+            <a href="#architecture" onClick={scrollToSection('architecture')} className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Architecture</a>
+            <a href="#github" onClick={scrollToSection('github')} className="text-sm font-medium text-slate-400 hover:text-white transition-colors flex items-center gap-1">
               <Github className="w-4 h-4" /> GitHub
             </a>
           </div>

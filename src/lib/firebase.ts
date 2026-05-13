@@ -12,6 +12,18 @@ import {
 } from 'firebase/auth';
 import { initializeFirestore, doc, getDocFromServer } from 'firebase/firestore';
 
+// Suppress Firebase heartbeat IndexedDB errors (harmless internal SDK noise)
+const originalConsoleError = console.error;
+console.error = (...args: unknown[]) => {
+  const msg = String(args[0] ?? '');
+  if (
+    msg.includes('firebase-heartbeat-store') ||
+    msg.includes('idb-get') ||
+    msg.includes('idb-set')
+  ) return;
+  originalConsoleError.apply(console, args);
+};
+
 const REQUIRED_VARS = [
   'VITE_FIREBASE_API_KEY',
   'VITE_FIREBASE_AUTH_DOMAIN',

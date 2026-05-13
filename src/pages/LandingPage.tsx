@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Download, Zap, Shield, Globe, Layout, Layers, RefreshCw, Twitter, Mail, ExternalLink, Linkedin, MessageSquare, UserCheck, X, CheckCircle2 } from 'lucide-react';
+import { Download, Zap, Shield, Globe, Layout, Layers, RefreshCw, Twitter, Mail, ExternalLink, Linkedin, MessageSquare, UserCheck, X, CheckCircle2, Github, Instagram, Facebook, Send, Phone } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Logo from '../components/Logo';
 import { Link } from 'react-router-dom';
@@ -102,7 +102,7 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-bold uppercase tracking-widest mb-6">
-              <Logo size={12} className="hover:scale-100" /> A Product of Lorapok
+              <Logo size={12} className="hover:scale-100" /> A Product of Lorapok Labs
             </span>
           </motion.div>
 
@@ -418,23 +418,33 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Minimal Social Footer Bar — replaces the old heavy footer */}
-      <div className="border-t border-white/5 bg-black/20 py-8 px-6">
+      {/* Footer */}
+      <div className="border-t border-white/10 bg-black/30 py-10 px-6">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <Logo size={28} />
-            <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">Lorapok Labs &middot; Bangladesh</span>
+          <div className="flex items-center gap-4 shrink-0">
+            <Logo size={32} />
+            <div>
+              <span className="text-base font-bold text-slate-200 block">Lorapok Labs &middot; Bangladesh</span>
+              <span className="text-sm text-slate-500">&copy; {new Date().getFullYear()} Lorapok Labs. All rights reserved.</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <a href="https://github.com/lorapok" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all" title="GitHub"><Globe className="w-4 h-4" /></a>
-            <a href="https://x.com/LorapokLabs" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all" title="X / Twitter"><Twitter className="w-4 h-4" /></a>
-            <a href="mailto:lorapokdev@gmail.com" className="p-2 rounded-lg bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all" title="Email"><Mail className="w-4 h-4" /></a>
-            <a href="https://www.linkedin.com/showcase/lorapok/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all" title="LinkedIn"><Linkedin className="w-4 h-4" /></a>
-            <a href="https://www.reddit.com/r/LorapokLabs/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all" title="Reddit"><MessageSquare className="w-4 h-4" /></a>
-            <a href="https://gravatar.com/lorapok" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all" title="Gravatar"><UserCheck className="w-4 h-4" /></a>
-            <a href="https://lorapok.github.io/#contact" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all" title="Website"><ExternalLink className="w-4 h-4" /></a>
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            {[
+              { href: 'https://github.com/lorapok', icon: <Github className="w-5 h-5" />, label: 'GitHub' },
+              { href: 'https://x.com/lorapoklabs', icon: <Twitter className="w-5 h-5" />, label: 'X / Twitter' },
+              { href: 'mailto:lorapokdev@gmail.com', icon: <Mail className="w-5 h-5" />, label: 'Email' },
+              { href: 'https://www.linkedin.com/showcase/lorapok/', icon: <Linkedin className="w-5 h-5" />, label: 'LinkedIn' },
+              { href: 'https://www.reddit.com/r/LorapokLabs/', icon: <MessageSquare className="w-5 h-5" />, label: 'Reddit' },
+              { href: 'https://gravatar.com/lorapok', icon: <UserCheck className="w-5 h-5" />, label: 'Gravatar' },
+              { href: 'https://www.instagram.com/lorapoklabs/', icon: <Instagram className="w-5 h-5" />, label: 'Instagram' },
+              { href: 'https://www.facebook.com/lorapoklabs', icon: <Facebook className="w-5 h-5" />, label: 'Facebook' },
+              { href: 'https://lorapok.com/contact', icon: <ExternalLink className="w-5 h-5" />, label: 'Contact' },
+            ].map(({ href, icon, label }) => (
+              <a key={label} href={href} target={href.startsWith('mailto') ? undefined : '_blank'} rel="noopener noreferrer"
+                className="p-3 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-sky-400 hover:bg-sky-500/10 hover:border-sky-500/30 transition-all"
+                title={label}>{icon}</a>
+            ))}
           </div>
-          <p className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">&copy; {new Date().getFullYear()} Lorapok Labs</p>
         </div>
       </div>
     </div>

@@ -5,6 +5,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      publish_to_amo:
+        description: 'Publish to AMO? (0 = ZIP only, 1 = full AMO publish + version bump)'
+        required: false
+        default: '0'
 
 permissions:
   contents: write
@@ -13,16 +18,21 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # Resolved publish flag: prefer workflow_dispatch input, fall back to repo secret/var
+  PUBLISH_TO_AMO: ${{ github.event.inputs.publish_to_amo || vars.PUBLISH_TO_AMO || '0' }}
 
 jobs:
   # ─────────────────────────────────────────────
-  # JOB 1: Build the extension ZIP + bump version
+  # JOB 1: Build the extension ZIP
+  #   PUBLISH_TO_AMO=0 → read current version, build ZIP, GitHub Release only
+  #   PUBLISH_TO_AMO=1 → bump patch version (+1 to last segment), build ZIP,
+  #                       GitHub Release, sign with AMO, commit version bump
   # ─────────────────────────────────────────────
   build-extension:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.bump.outputs.version }}
-      zip_name: ${{ steps.bump.outputs.zip_name }}
+      version: ${{ steps.version.outputs.version }}
+      zip_name: ${{ steps.version.outputs.zip_name }}
 
     steps:
       - name: Checkout
@@ -35,51 +45,64 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Bump patch version
-        id: bump
+      - name: Resolve version (bump if PUBLISH_TO_AMO=1, read-only if 0)
+        id: version
         run: |
-          # Always pull latest manifest.json to avoid version conflicts
           git pull origin main --rebase
-          NEW_VERSION=$(node -e "
-            const fs = require('fs');
-            const manifest = JSON.parse(fs.readFileSync('public/extension/manifest.json', 'utf8'));
-            const parts = manifest.version.split('.').map(Number);
-            parts[2] += 1;
-            manifest.version = parts.join('.');
-            fs.writeFileSync('public/extension/manifest.json', JSON.stringify(manifest, null, 2) + '\n');
-            console.log(manifest.version);
-          ")
+
+          if [ "$PUBLISH_TO_AMO" = "1" ]; then
+            # Bump patch: 1.0.15 → 1.0.16
+            NEW_VERSION=$(node -e "
+              const fs = require('fs');
+              const manifest = JSON.parse(fs.readFileSync('public/extension/manifest.json', 'utf8'));
+              const parts = manifest.version.split('.').map(Number);
+              parts[2] += 1;
+              manifest.version = parts.join('.');
+              fs.writeFileSync('public/extension/manifest.json', JSON.stringify(manifest, null, 2) + '\n');
+              console.log(manifest.version);
+            ")
+            echo "Bumped to $NEW_VERSION"
+          else
+            # Read current version without modifying anything
+            NEW_VERSION=$(node -e "
+              const fs = require('fs');
+              const manifest = JSON.parse(fs.readFileSync('public/extension/manifest.json', 'utf8'));
+              console.log(manifest.version);
+            ")
+            echo "Using current version $NEW_VERSION (no bump, PUBLISH_TO_AMO=0)"
+          fi
+
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "zip_name=lorapok-tabman-$NEW_VERSION.zip" >> $GITHUB_OUTPUT
-          echo "Bumped to $NEW_VERSION"
 
       - name: Package extension ZIP
         run: |
           cd public/extension
-          zip -r "../../${{ steps.bump.outputs.zip_name }}" \
+          zip -r "../../${{ steps.version.outputs.zip_name }}" \
             manifest.json \
             background.js \
             icons/ \
             README.md
-          # Also create a stable "latest" copy for the download button
-          cp "../../${{ steps.bump.outputs.zip_name }}" "../../lorapok-tabman-latest.zip"
+          cp "../../${{ steps.version.outputs.zip_name }}" "../../lorapok-tabman-latest.zip"
 
       - name: Upload extension ZIP as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: firefox-extension-${{ steps.bump.outputs.version }}
-          path: ${{ steps.bump.outputs.zip_name }}
+          name: firefox-extension-${{ steps.version.outputs.version }}
+          path: ${{ steps.version.outputs.zip_name }}
           retention-days: 90
 
       - name: Create GitHub Release with ZIP
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.bump.outputs.version }}
-          name: Lorapok TabMan v${{ steps.bump.outputs.version }}
+          tag_name: v${{ steps.version.outputs.version }}
+          name: Lorapok TabMan v${{ steps.version.outputs.version }}
           body: |
-            ## Lorapok TabMan v${{ steps.bump.outputs.version }}
+            ## Lorapok TabMan v${{ steps.version.outputs.version }}
 
-            ### Install locally (while awaiting Mozilla review)
+            ${{ env.PUBLISH_TO_AMO == '1' && '> ✅ **Full publish** — signed with AMO and submitted to Mozilla.' || '> 📦 **Download build** — ZIP only. Not submitted to Mozilla.' }}
+
+            ### Install locally
             1. Download `lorapok-tabman-latest.zip` below
             2. Extract to a folder
             3. Open Firefox → `about:debugging` → **This Firefox** → **Load Temporary Add-on...**
@@ -88,12 +111,15 @@ jobs:
             ### Dashboard
             Live at: https://maijied.github.io/Lorapok-TabMan/
           files: |
-            ${{ steps.bump.outputs.zip_name }}
+            ${{ steps.version.outputs.zip_name }}
             lorapok-tabman-latest.zip
           token: ${{ secrets.GITHUB_TOKEN }}
           make_latest: true
 
+      # ── AMO steps — only run when PUBLISH_TO_AMO=1 ──────────────────────
+
       - name: Sign with AMO (submit to Mozilla)
+        if: env.PUBLISH_TO_AMO == '1'
         id: amo_sign
         continue-on-error: true
         env:
@@ -109,12 +135,12 @@ jobs:
             --artifacts-dir=./web-ext-artifacts
 
       - name: Update AMO listing metadata via API
+        if: env.PUBLISH_TO_AMO == '1'
         continue-on-error: true
         env:
           AMO_API_KEY: ${{ secrets.AMO_API_KEY }}
           AMO_API_SECRET: ${{ secrets.AMO_API_SECRET }}
         run: |
-          # Generate JWT token for AMO API
           node -e "
             const crypto = require('crypto');
             const issuedAt = Math.floor(Date.now() / 1000);
@@ -129,12 +155,10 @@ jobs:
             const sig = crypto.createHmac('sha256', process.env.AMO_API_SECRET).update(header+'.'+body).digest('base64url');
             console.log(header+'.'+body+'.'+sig);
           " > /tmp/jwt.txt
-          JWT=\$(cat /tmp/jwt.txt)
-
-          # Update addon metadata (description, tags, homepage, support email)
+          JWT=$(cat /tmp/jwt.txt)
           curl -s -X PATCH \
             "https://addons.mozilla.org/api/v5/addons/addon/tabman@lorapok.com/" \
-            -H "Authorization: JWT \${JWT}" \
+            -H "Authorization: JWT ${JWT}" \
             -H "Content-Type: application/json" \
             -d '{
               "description": {"en-US": "**Lorapok TabMan** is a next-generation Firefox tab manager built for power users.\n\n**Key Features:**\n\n- ⚡ **One-Click Collapse** — Save all open tabs and close them instantly, reclaiming up to 95% of tab memory\n- 😴 **Tab Snooze** — Automatically unloads inactive tabs from memory after a configurable timeout (1 min – 7 days)\n- ☁️ **Cloud Sync** — Sign in with Google to sync your tab groups across all devices via Firebase\n- 📁 **Smart Groups** — Organize tabs into named groups with stars, locks, and hierarchical tags\n- ⌨️ **Keyboard Shortcuts** — Navigate and manage at lightning speed\n- 📊 **Memory Analytics** — Visualize how much RAM you have reclaimed\n- 📦 **Bulk Operations** — Multi-select tagging, archiving, and deletion\n- 🔄 **OneTab Migration** — Import your existing OneTab sessions instantly\n\nOpen source under Apache-2.0. Built with passion in Bangladesh by Lorapok Labs."},
@@ -145,6 +169,7 @@ jobs:
             }' | head -c 500
 
       - name: Upload addon icon to AMO
+        if: env.PUBLISH_TO_AMO == '1'
         continue-on-error: true
         env:
           AMO_API_KEY: ${{ secrets.AMO_API_KEY }}
@@ -164,18 +189,19 @@ jobs:
             const sig = crypto.createHmac('sha256', process.env.AMO_API_SECRET).update(header+'.'+body).digest('base64url');
             console.log(header+'.'+body+'.'+sig);
           " > /tmp/jwt2.txt
-          JWT2=\$(cat /tmp/jwt2.txt)
+          JWT2=$(cat /tmp/jwt2.txt)
           curl -s -X PATCH \
             "https://addons.mozilla.org/api/v5/addons/addon/tabman@lorapok.com/" \
-            -H "Authorization: JWT \${JWT2}" \
+            -H "Authorization: JWT ${JWT2}" \
             -F "icon=@public/extension/icons/icon-128.png" | head -c 200
 
       - name: Commit version bump
+        if: env.PUBLISH_TO_AMO == '1'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add public/extension/manifest.json
-          git diff --staged --quiet || git commit -m "chore: bump extension to v${{ steps.bump.outputs.version }} [skip ci]"
+          git diff --staged --quiet || git commit -m "chore: bump extension to v${{ steps.version.outputs.version }} [skip ci]"
           git push
 
   # ─────────────────────────────────────────────
@@ -184,26 +210,17 @@ jobs:
   build-dashboard:
     runs-on: ubuntu-latest
     needs: build-extension
-    outputs:
-      artifact_url: ${{ steps.get_url.outputs.artifact_url }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: main  # use latest (after version bump commit)
+          ref: main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
-      - name: Get extension artifact download URL
-        id: get_url
-        run: |
-          # Construct the artifact URL for the GitHub Actions run
-          ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          echo "artifact_url=$ARTIFACT_URL" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         run: npm install
@@ -240,7 +257,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   # ─────────────────────────────────────────────
-  # JOB 4: Post setup notification as PR/issue comment
+  # JOB 4: Summary notification
   # ─────────────────────────────────────────────
   notify:
     runs-on: ubuntu-latest
@@ -250,26 +267,29 @@ jobs:
     steps:
       - name: Post deployment summary
         run: |
-          echo "## 🚀 Lorapok TabMan v${{ needs.build-extension.outputs.version }} Deployed" >> $GITHUB_STEP_SUMMARY
+          VERSION="${{ needs.build-extension.outputs.version }}"
+          FLAG="${{ env.PUBLISH_TO_AMO }}"
+
+          echo "## 🚀 Lorapok TabMan v${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$FLAG" = "1" ]; then
+            echo "✅ **Full publish** — version bumped, signed with AMO, submitted to Mozilla." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "📦 **Download build** — ZIP only. AMO signing skipped (PUBLISH_TO_AMO=0)." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> To do a full AMO publish next time, set \`PUBLISH_TO_AMO=1\` in your repo **Variables** (Settings → Secrets and variables → Actions → Variables) or trigger via workflow_dispatch with input \`1\`." >> $GITHUB_STEP_SUMMARY
+          fi
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🌐 Dashboard" >> $GITHUB_STEP_SUMMARY
           echo "Live at: https://${{ github.repository_owner }}.github.io/Lorapok-TabMan/" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🦊 Firefox Extension" >> $GITHUB_STEP_SUMMARY
-          echo "**Download:** [lorapok-tabman-${{ needs.build-extension.outputs.version }}.zip](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "**Download:** [lorapok-tabman-${VERSION}.zip](https://github.com/${{ github.repository }}/releases/tag/v${VERSION})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📦 How to install the extension locally (while awaiting Mozilla approval)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "1. Download the ZIP from the link above" >> $GITHUB_STEP_SUMMARY
-          echo "2. Extract the ZIP to a folder" >> $GITHUB_STEP_SUMMARY
-          echo "3. Open Firefox → go to \`about:debugging\`" >> $GITHUB_STEP_SUMMARY
-          echo "4. Click **This Firefox** → **Load Temporary Add-on...**" >> $GITHUB_STEP_SUMMARY
-          echo "5. Select the \`manifest.json\` file inside the extracted folder" >> $GITHUB_STEP_SUMMARY
-          echo "6. The TabMan icon will appear in your Firefox toolbar" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🎯 Usage" >> $GITHUB_STEP_SUMMARY
-          echo "- **Collapse tabs**: Click the TabMan toolbar icon to save all open tabs and close them" >> $GITHUB_STEP_SUMMARY
-          echo "- **View groups**: Open the dashboard at the link above" >> $GITHUB_STEP_SUMMARY
-          echo "- **Restore tabs**: Click 'Restore All' on any group card" >> $GITHUB_STEP_SUMMARY
-          echo "- **Tab Snooze**: Inactive tabs auto-unload after your configured timeout (Settings → Tab Snooze)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Cloud sync**: Sign in with Google to sync groups across devices" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Install locally" >> $GITHUB_STEP_SUMMARY
+          echo "1. Download the ZIP from the release link above" >> $GITHUB_STEP_SUMMARY
+          echo "2. Extract to a folder" >> $GITHUB_STEP_SUMMARY
+          echo "3. Open Firefox → \`about:debugging\` → **This Firefox** → **Load Temporary Add-on...**" >> $GITHUB_STEP_SUMMARY
+          echo "4. Select \`manifest.json\` from the extracted folder" >> $GITHUB_STEP_SUMMARY

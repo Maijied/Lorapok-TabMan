@@ -97,10 +97,28 @@ browser.browserAction.onClicked.addListener(async () => {
 
   const storage = await browser.storage.local.get("groups");
   const groups = storage.groups || [];
-  await browser.storage.local.set({ groups: [newGroup, ...groups] });
+  const updatedGroups = [newGroup, ...groups];
+  await browser.storage.local.set({ groups: updatedGroups });
 
   const tabIds = tabs.map(t => t.id).filter(id => id !== undefined);
   await browser.tabs.remove(tabIds);
 
-  browser.tabs.create({ url: DASHBOARD_URL });
+  const dashTab = await browser.tabs.create({ url: DASHBOARD_URL });
+
+  // Sync groups to localStorage so the dashboard web page can read them.
+  // The dashboard reads from localStorage (key: 'lorapok_tabman_groups') for
+  // guest sessions. Since it's a web page (not an extension page) it cannot
+  // access browser.storage.local directly, so we inject the data via a
+  // content script once the tab finishes loading.
+  const groupsJson = JSON.stringify(updatedGroups);
+  function onTabUpdated(tabId, changeInfo) {
+    if (tabId !== dashTab.id || changeInfo.status !== 'complete') return;
+    browser.tabs.onUpdated.removeListener(onTabUpdated);
+    browser.tabs.executeScript(dashTab.id, {
+      code: `localStorage.setItem('lorapok_tabman_groups', ${JSON.stringify(groupsJson)});`
+    }).catch(() => {
+      // executeScript may fail if the tab navigated away — safe to ignore
+    });
+  }
+  browser.tabs.onUpdated.addListener(onTabUpdated);
 });
