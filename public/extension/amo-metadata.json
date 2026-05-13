@@ -1,0 +1,21 @@
+{
+  "version": {
+    "license": "apache-2.0",
+    "release_notes": {
+      "en-US": "Tab Snooze System: inactive tabs auto-unload from memory. UI polish, Firebase security hardening, CI/CD pipeline."
+    }
+  },
+  "addon": {
+    "name": {
+      "en-US": "Lorapok TabMan"
+    },
+    "summary": {
+      "en-US": "Collapse all open tabs into a searchable dashboard. Reduce memory usage by up to 95% and reclaim your focus."
+    },
+    "description": {
+      "en-US": "Lorapok TabMan is a next-generation Firefox tab manager. One click collapses all open tabs into a structured, searchable dashboard. Features include cloud sync via Firebase, hierarchical tagging, bulk operations, Tab Snooze (auto-unload inactive tabs), analytics, and keyboard shortcuts."
+    },
+    "homepage": "https://maijied.github.io/Lorapok-TabMan/",
+    "categories": ["tabs", "productivity"]
+  }
+}

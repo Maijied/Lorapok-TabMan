@@ -54,7 +54,8 @@ jobs:
           zip -r "../../${{ steps.bump.outputs.zip_name }}" \
             manifest.json \
             background.js \
-            icons/
+            icons/ \
+            amo-metadata.json
 
       - name: Upload extension ZIP as artifact
         uses: actions/upload-artifact@v4
@@ -75,6 +76,7 @@ jobs:
             --api-secret="${AMO_API_SECRET}" \
             --channel=listed \
             --source-dir=public/extension \
+            --amo-metadata=public/extension/amo-metadata.json \
             --artifacts-dir=./web-ext-artifacts
 
       - name: Commit version bump
