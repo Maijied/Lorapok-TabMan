@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Lorapok TabMan",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Reduce memory usage and reclaim your focus by collapsing all open tabs into a single, searchable dashboard.",
   "author": "Mohammad Maizied Hasan Majumder",
   "developer": {
