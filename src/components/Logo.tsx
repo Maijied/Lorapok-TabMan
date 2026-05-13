@@ -6,6 +6,9 @@ interface LogoProps {
 }
 
 export default function Logo({ className, size = 32 }: LogoProps) {
+  // Use import.meta.env.BASE_URL so the path works both locally (/) and on GitHub Pages (/Lorapok-TabMan/)
+  const logoSrc = `${import.meta.env.BASE_URL}logo.png`;
+
   return (
     <div 
       className={cn("relative group flex items-center justify-center transition-all duration-300", className)}
@@ -16,11 +19,10 @@ export default function Logo({ className, size = 32 }: LogoProps) {
       
       <div className="relative w-full h-full rounded-full bg-gradient-to-br from-white/10 to-transparent border border-white/20 p-0 overflow-hidden shadow-lg shadow-accent/20">
         <img 
-          src="/logo.png" 
+          src={logoSrc}
           alt="Lorapok TabMan Logo" 
           className="w-full h-full object-cover relative z-10 group-hover:scale-110 transition-transform duration-700"
           onError={(e) => {
-            // Fallback to SVG if image fails to load
             e.currentTarget.style.display = 'none';
             const fallback = e.currentTarget.nextElementSibling as HTMLElement;
             if (fallback) {

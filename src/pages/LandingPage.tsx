@@ -5,7 +5,8 @@ import Navbar from '../components/Navbar';
 import Logo from '../components/Logo';
 import { Link } from 'react-router-dom';
 
-const ADDON_RELEASES_URL = 'https://github.com/Maijied/Lorapok-TabMan/actions/workflows/deploy.yml';
+const ADDON_RELEASES_URL = 'https://github.com/Maijied/Lorapok-TabMan/releases/latest';
+const ADDON_DOWNLOAD_URL = 'https://github.com/Maijied/Lorapok-TabMan/releases/latest/download/lorapok-tabman-latest.zip';
 
 function InstallModal({ onClose }: { onClose: () => void }) {
   return (
@@ -31,17 +32,21 @@ function InstallModal({ onClose }: { onClose: () => void }) {
           </button>
         </div>
         <a
-          href={ADDON_RELEASES_URL}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={ADDON_DOWNLOAD_URL}
+          download="lorapok-tabman-latest.zip"
           className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-black text-white text-sm mb-6 group relative overflow-hidden"
           style={{ background: 'linear-gradient(135deg, #38bdf8 0%, #0ea5e9 50%, #0284c7 100%)' }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
           <Download className="w-5 h-5 relative" />
           <span className="relative">Download Latest ZIP</span>
-          <ExternalLink className="w-4 h-4 relative opacity-70" />
         </a>
+        <p className="text-center text-[10px] text-slate-600 mb-4">
+          Or browse all releases:{' '}
+          <a href={ADDON_RELEASES_URL} target="_blank" rel="noopener noreferrer" className="text-sky-500 hover:underline">
+            GitHub Releases <ExternalLink className="w-3 h-3 inline" />
+          </a>
+        </p>
         <div className="space-y-3">
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">How to install locally</p>
           {[

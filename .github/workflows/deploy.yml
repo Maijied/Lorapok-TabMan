@@ -61,6 +61,8 @@ jobs:
             background.js \
             icons/ \
             README.md
+          # Also create a stable "latest" copy for the download button
+          cp "../../${{ steps.bump.outputs.zip_name }}" "../../lorapok-tabman-latest.zip"
 
       - name: Upload extension ZIP as artifact
         uses: actions/upload-artifact@v4
@@ -68,6 +70,28 @@ jobs:
           name: firefox-extension-${{ steps.bump.outputs.version }}
           path: ${{ steps.bump.outputs.zip_name }}
           retention-days: 90
+
+      - name: Create GitHub Release with ZIP
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.bump.outputs.version }}
+          name: Lorapok TabMan v${{ steps.bump.outputs.version }}
+          body: |
+            ## Lorapok TabMan v${{ steps.bump.outputs.version }}
+
+            ### Install locally (while awaiting Mozilla review)
+            1. Download `lorapok-tabman-latest.zip` below
+            2. Extract to a folder
+            3. Open Firefox → `about:debugging` → **This Firefox** → **Load Temporary Add-on...**
+            4. Select `manifest.json` from the extracted folder
+
+            ### Dashboard
+            Live at: https://maijied.github.io/Lorapok-TabMan/
+          files: |
+            ${{ steps.bump.outputs.zip_name }}
+            lorapok-tabman-latest.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+          make_latest: true
 
       - name: Sign with AMO (submit to Mozilla)
         id: amo_sign
