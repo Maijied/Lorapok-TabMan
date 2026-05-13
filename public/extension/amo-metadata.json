@@ -2,7 +2,7 @@
   "version": {
     "license": "Apache-2.0",
     "release_notes": {
-      "en-US": "Tab Snooze System: inactive tabs auto-unload from memory. UI polish, Firebase security hardening, CI/CD pipeline."
+      "en-US": "Tab Snooze System: inactive tabs auto-unload from memory to save RAM. UI polish, Firebase security hardening, automated CI/CD pipeline."
     }
   },
   "addon": {
@@ -10,14 +10,16 @@
       "en-US": "Lorapok TabMan"
     },
     "summary": {
-      "en-US": "Collapse all open tabs into a searchable dashboard. Reduce memory usage by up to 95% and reclaim your focus."
+      "en-US": "Reduce memory usage and reclaim your focus by collapsing all open tabs into a single, searchable dashboard."
     },
     "description": {
-      "en-US": "Lorapok TabMan is a next-generation Firefox tab manager. One click collapses all open tabs into a structured, searchable dashboard. Features include cloud sync via Firebase, hierarchical tagging, bulk operations, Tab Snooze (auto-unload inactive tabs), analytics, and keyboard shortcuts."
+      "en-US": "**Lorapok TabMan** is a next-generation Firefox tab manager built for power users.\n\n**Key Features:**\n\n- ⚡ **One-Click Collapse** — Save all open tabs and close them instantly, reclaiming up to 95% of tab memory\n- 😴 **Tab Snooze** — Automatically unloads inactive tabs from memory after a configurable timeout (1 min – 7 days)\n- ☁️ **Cloud Sync** — Sign in with Google to sync your tab groups across all devices via Firebase\n- 📁 **Smart Groups** — Organize tabs into named groups with stars, locks, and hierarchical tags\n- ⌨️ **Keyboard Shortcuts** — Navigate and manage at lightning speed\n- 📊 **Memory Analytics** — Visualize how much RAM you've reclaimed\n- 📦 **Bulk Operations** — Multi-select tagging, archiving, and deletion\n- 🔄 **OneTab Migration** — Import your existing OneTab sessions instantly\n\nOpen source under Apache-2.0. Built with passion in Bangladesh by Lorapok Labs."
     },
     "homepage": "https://maijied.github.io/Lorapok-TabMan/",
+    "support_email": "lorapokdev@gmail.com",
     "categories": {
-      "firefox": ["tabs", "productivity"]
-    }
+      "firefox": ["tabs", "other"]
+    },
+    "tags": ["tabs", "memory", "productivity", "privacy", "dark mode"]
   }
 }
