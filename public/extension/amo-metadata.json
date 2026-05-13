@@ -1,6 +1,6 @@
 {
   "version": {
-    "license": "apache-2.0",
+    "license": "Apache-2.0",
     "release_notes": {
       "en-US": "Tab Snooze System: inactive tabs auto-unload from memory. UI polish, Firebase security hardening, CI/CD pipeline."
     }
