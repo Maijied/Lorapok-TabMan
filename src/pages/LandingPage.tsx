@@ -1,14 +1,89 @@
-import { ReactNode } from 'react';
-import { motion } from 'motion/react';
-import { Download, Zap, Shield, Globe, Layout, Layers, RefreshCw, Twitter, Mail, ExternalLink, Linkedin, MessageSquare, UserCheck } from 'lucide-react';
+import { ReactNode, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Download, Zap, Shield, Globe, Layout, Layers, RefreshCw, Twitter, Mail, ExternalLink, Linkedin, MessageSquare, UserCheck, X, CheckCircle2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Logo from '../components/Logo';
 import { Link } from 'react-router-dom';
 
+const ADDON_RELEASES_URL = 'https://github.com/Maijied/Lorapok-TabMan/actions/workflows/deploy.yml';
+
+function InstallModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        className="relative w-full max-w-lg bg-[#0a0f1a] border border-white/10 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden"
+      >
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-sky-500/10 blur-[80px] rounded-full pointer-events-none" />
+        <div className="flex items-start justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Logo size={40} />
+            <div>
+              <h2 className="text-xl font-black text-white">Install Lorapok TabMan</h2>
+              <p className="text-slate-500 text-xs mt-0.5">Firefox Add-on · Free · Open Source</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        <a
+          href={ADDON_RELEASES_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-black text-white text-sm mb-6 group relative overflow-hidden"
+          style={{ background: 'linear-gradient(135deg, #38bdf8 0%, #0ea5e9 50%, #0284c7 100%)' }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+          <Download className="w-5 h-5 relative" />
+          <span className="relative">Download Latest ZIP</span>
+          <ExternalLink className="w-4 h-4 relative opacity-70" />
+        </a>
+        <div className="space-y-3">
+          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">How to install locally</p>
+          {[
+            { step: '01', text: 'Click "Download Latest ZIP" above and download the file' },
+            { step: '02', text: 'Extract the ZIP to a folder on your computer' },
+            { step: '03', text: 'Open Firefox and go to about:debugging' },
+            { step: '04', text: 'Click "This Firefox" → "Load Temporary Add-on..."' },
+            { step: '05', text: 'Select the manifest.json file inside the extracted folder' },
+            { step: '06', text: 'The TabMan icon appears in your Firefox toolbar — done!' },
+          ].map(({ step, text }) => (
+            <div key={step} className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+              <span className="text-[10px] font-black text-sky-500 font-mono mt-0.5 shrink-0">{step}</span>
+              <p className="text-slate-300 text-sm leading-relaxed">{text}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20">
+          <div className="flex items-start gap-3">
+            <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <p className="text-amber-300/80 text-xs leading-relaxed">
+              <strong>Note:</strong> Temporary add-ons are removed when Firefox restarts. For permanent installation, wait for Mozilla review approval — we've submitted to AMO and it's pending review.
+            </p>
+          </div>
+        </div>
+        <button onClick={onClose} className="w-full mt-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 font-bold text-sm transition-all border border-white/5">
+          Got it
+        </button>
+      </motion.div>
+    </div>
+  );
+}
+
 export default function LandingPage() {
+  const [showInstallModal, setShowInstallModal] = useState(false);
+
   return (
     <div className="relative overflow-hidden bg-[#030711]">
       <Navbar />
+
+      <AnimatePresence>
+        {showInstallModal && <InstallModal onClose={() => setShowInstallModal(false)} />}
+      </AnimatePresence>
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-6">
@@ -69,16 +144,15 @@ export default function LandingPage() {
                 </span>
               </motion.button>
             </Link>
-            <a href="/extension/tabman-v1.0.0.zip" download>
-              <motion.button
+            <motion.button
+                onClick={() => setShowInstallModal(true)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl font-bold text-lg backdrop-blur-md transition-all flex items-center gap-2"
               >
                 <Download className="w-5 h-5" /> Download Addon
               </motion.button>
-            </a>
-          </motion.div>
+            </motion.div>
         </div>
       </section>
 
