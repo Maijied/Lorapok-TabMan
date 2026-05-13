@@ -38,6 +38,8 @@ jobs:
       - name: Bump patch version
         id: bump
         run: |
+          # Always pull latest manifest.json to avoid version conflicts
+          git pull origin main --rebase
           NEW_VERSION=$(node -e "
             const fs = require('fs');
             const manifest = JSON.parse(fs.readFileSync('public/extension/manifest.json', 'utf8'));
