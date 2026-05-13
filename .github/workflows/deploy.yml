@@ -58,7 +58,7 @@ jobs:
             manifest.json \
             background.js \
             icons/ \
-            amo-metadata.json
+            README.md
 
       - name: Upload extension ZIP as artifact
         uses: actions/upload-artifact@v4
