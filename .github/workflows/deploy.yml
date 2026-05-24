@@ -81,7 +81,7 @@ jobs:
           zip -r "../../${{ steps.version.outputs.zip_name }}" \
             manifest.json \
             background.js \
-            icons/ \
+            icon/ \
             README.md
           cp "../../${{ steps.version.outputs.zip_name }}" "../../lorapok-tabman-latest.zip"
 
@@ -193,7 +193,7 @@ jobs:
           curl -s -X PATCH \
             "https://addons.mozilla.org/api/v5/addons/addon/tabman@lorapok.com/" \
             -H "Authorization: JWT ${JWT2}" \
-            -F "icon=@public/extension/icons/icon-128.png" | head -c 200
+            -F "icon=@public/extension/icon/icon-128.png" | head -c 200
 
       - name: Commit version bump
         if: env.PUBLISH_TO_AMO == '1'

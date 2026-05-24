@@ -71,7 +71,7 @@ function buildZip(version) {
     const extDir = path.join(ROOT, 'public/extension');
     archive.file(path.join(extDir, 'manifest.json'), { name: 'manifest.json' });
     archive.file(path.join(extDir, 'background.js'), { name: 'background.js' });
-    archive.directory(path.join(extDir, 'icons'), 'icons');
+    archive.directory(path.join(extDir, 'icon'), 'icon');
 
     const readme = path.join(extDir, 'README.md');
     if (fs.existsSync(readme)) {
